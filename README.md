@@ -26,4 +26,4 @@ Edit app.js, add `var session = require('express-session');` and `app.use(sessio
 
 #### livereload
 * Serverjs live restart when any js file change. Install nodemon, `npm install -g nodemon`. Run express with `nodemon bin/www`
-* Srowser live refresh when any file change. Check [grunt-contrib-watch](https://github.com/gruntjs/grunt-contrib-watch), or check Gruntfile.js in this project
+* Browser live refresh when any file change. Check [grunt-contrib-watch](https://github.com/gruntjs/grunt-contrib-watch), or check Gruntfile.js in this project
