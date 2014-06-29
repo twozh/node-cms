@@ -1,8 +1,65 @@
 body {
-  padding: 50px;
+  /* margin : 15px 0px 0px 0px; */
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
 a {
-  color: #00B7FF;
+    color: #00B7FF;
+}
+.red{
+  color: red;
+}
+.card{
+  padding-bottom: 32px;
+}
+.card h1{
+  font-size: 24px;
+}
+.card .author{
+  margin-left: 12px;
+}
+.card .category{
+  margin-left: 12px;
+}
+.card .content{
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.card .more{
+  margin-top: 8px;
+}
+.card a{
+  color: #333;
+}
+
+.form-signin {
+  max-width: 400px;
+  padding: 0px;
+  border: 1px solid #d8dee2;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-bottom: 0;
+  margin-left: auto;
+  border-radius: 5px;
+}
+
+.form-signin-header h4 {
+  font-weight: bolder;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  background-color: #f0ebeb;
+  margin-right: 0px;
+  margin-left: 0px;
+  padding: 15px;
+  border-radius: 5px 5px 0px 0px;
+}
+
+.form-signin-body {
+  padding: 20px;
+}
+
+.textarea {
+  width: 100%;
+  height: 200px;
+  font-size: 14px;
+  line-height: 18px;
 }

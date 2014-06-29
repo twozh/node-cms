@@ -1,0 +1,17 @@
+extends ../layout/layout
+
+block login
+  if username
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/u/" + username)= username
+        | ,  欢迎您
+  else
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/signup") 注册
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/signin") 登陆
+
+block content
+  .container
+    h1= title
+    p Welcome to #{title}

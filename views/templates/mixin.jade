@@ -1,0 +1,18 @@
+mixin cateTotring(cate)
+  if (cate === "tech")
+    |技术
+  else
+    |业界
+
+mixin addPostCard(post)
+  .card
+    h1: a(href="/fileid/" + post._id)= post.title
+    .time
+      +dateFormatOut(post.postTime)
+      span.author 作者：
+        a(href="/u/" + post.author.name)= post.author.name
+      span.category 分类：
+        a(href="/category/" + post.category)
+          +cateToString(post.category)
+    .content
+      !=post.content.slice(0, 140)

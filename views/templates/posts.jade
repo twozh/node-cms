@@ -1,0 +1,12 @@
+include mixin.jade
+
+extends ../layout/layout
+
+block content
+  .row
+    .col-xs-12.col-md-8
+      if (posts && posts.length)
+        each post in posts
+          +addPostCard(post, null)
+
+    .col-xs-12.col-md-4 热门文章

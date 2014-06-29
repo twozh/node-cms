@@ -1,0 +1,55 @@
+include ../mixins/public
+
+doctype html
+html
+  head
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    title= title || 'node-cms'
+    link(rel='stylesheet', href='/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
+    //include your own style
+    block stylesheet
+
+  body
+    nav.navbar.navbar-default(role="navigation")
+      .navbar-header
+        button.navbar-toggle(type="button", data-toggle="collapse", data-target="#id-collapse")
+          span.sr-only Toggle navigation
+          span.icon-bar
+          span.icon-bar
+          span.icon-bar
+        a.navbar-brand(href="/") node-cms
+
+      .collapse.navbar-collapse#id-collapse
+        ul.nav.navbar-nav
+          li
+            a(href="/") 首页
+          li
+            a(href="/c/tech") 技术
+          li
+            a(href="/c/business") 业界
+
+        //right side info
+        if username
+          p.navbar-text.navbar-right
+            a.navbar-link(href="/u/" + username)= username
+              | ,  欢迎您
+        else
+          p.navbar-text.navbar-right
+            a.navbar-link(href="/signup") 注册
+          p.navbar-text.navbar-right
+            a.navbar-link(href="/signin") 登陆
+
+    .container
+      //define content
+      block content
+
+    script(src="//localhost:35729/livereload.js")
+    script(src="/jquery/dist/jquery.min.js")
+    script(src="/bootstrap/dist/js/bootstrap.min.js")
+    script(src="/javascripts/main.js")
+
+    //include your own script
+    block scripts

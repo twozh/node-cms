@@ -1,0 +1,25 @@
+extends ../layout/layout
+
+block login
+  p.navbar-text.navbar-right
+    a.navbar-link(href="signin") 登陆
+
+block content
+  form#form-signup.form-signin
+    .form-signin-header
+      h4 创建新用户
+    .form-signin-body
+      .form-group#name
+        label 用户名
+        input#iName.form-control(required)
+      .form-group#email
+        label E-mail
+        input#iEmail.form-control(type='email', required)
+      .form-group.pass
+        label 密码
+        input#iPass.form-control(type='password', required)
+      .form-group.pass
+        label 重复密码
+        input#iPass2.form-control(type='password', required)
+      p(id='msg')
+      input#submit.btn.btn-default(type='submit')

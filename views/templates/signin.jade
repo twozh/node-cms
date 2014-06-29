@@ -1,0 +1,21 @@
+extends ../layout/layout
+
+block login
+	p.navbar-text.navbar-right
+		a.navbar-link(href="/signup") 注册
+
+block content
+	form#form-signin.form-signin
+		.form-signin-header
+			h4 请登录
+		.form-signin-body
+			.form-group
+				label 用户名
+				input#iName.form-control(required)
+			.form-group
+				label#lPass 密码
+				input#iPass.form-control(type='password', required)
+			p(id='msg')
+			input#submit.btn.btn-default(type='submit')
+
+
