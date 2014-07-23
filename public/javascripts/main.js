@@ -1,7 +1,9 @@
+var my_prj = {
+
 /*
  *  form-signup submit - ajax
  */
-function signup(event){
+signup: function(event){
 	if ($('#iPass').val().length < 3 || $('#iPass').val() != $('#iPass2').val()){
 		$('.pass').addClass('red');
 	}
@@ -25,12 +27,12 @@ function signup(event){
 		});
 	}
 	return false;
-}
+},
 
 /*
  *  form-signin submit - ajax
  */
-function signin(event){
+signin: function (event){
 	if ($('#iPass').val().length < 3){
 		$('#lPass').addClass('red');
 		$( "#msg" ).html("Password's length should longer than 3");
@@ -48,66 +50,71 @@ function signin(event){
 			if (ret.status === 'err'){
 				$( "#msg" ).addClass('red');
 			} else {
-				location.href = '/u/' + data.name;
+				//location.href = '/u/' + data.name;
+				location.href = '/new';
 			}
 		}).fail(function(){
 			alert( "Sorry, there was a problem!" );
 		});
 	}
 	return false;
-}
+},
 
+preview: function(e){
+	if(!document.forms.formNewPost.checkValidity()){
+		return;
+	}
 
-/*
- *  new article submit - ajax
- */
-function new_article(event){
-	var data = {
-		title: $('#i_title').val(),
-		content: $('#i_content').val(),
-		category: $("input[name='category']:checked").val(),
-	};
+	e.preventDefault();
+	$("#formNewPost").hide();
 
-	$.post("new", data, function(data){
-		//console.log(data);
-		$( "#msg" ).html(data.msg);
+	$("#preTitle").html($("#tilte").val());
+	$("#preBrief").html($("#brief").val());
+	$("#preContent").html(marked($("#content").val()));
+
+	$("#preview").removeClass("hidden");
+
+	return;
+},
+
+back: function(e){
+	$("#formNewPost").show();
+	$("#preview").addClass("hidden");
+},
+
+createPost: function(e){
+	var post = {};
+	post.title = $("#tilte").val();
+	//post.author, attach in server side
+	post.category = $("input[name='category']:checked").val();
+	post.content = {};
+	post.content.brief = $("#brief").val();
+	post.content.full  = $("#content").val();
+	post.url = $("#url").val();
+
+	$.post("new", post, function(data){
+		console.log(data);
 		if (data.status === 'err'){
-			$( "#msg" ).addClass('red');
+			alert(data.msg);
 		} else{
-			location.href = '/u/' + data.name;
+			location.href = '/new';
 		}
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
 	});
+},
 
-	return false;
-}
 
-/* delete article */
-var delete_article = function(event){
-	var elem = $( this );
-	console.log(elem.attr('fileid'));
-	$.ajax({
-		url: '/fileid/' + elem.attr('fileid'),
-		type: "DELETE",
-		success: function( ret ) {
-			console.log(ret);
-			if (ret.status === "succ"){
-				elem.attr('disabled', 'disabled');
-			}
-		},
-		error: function(xhr, status, errorThrown ) {
-			alert( "Sorry, there was a problem!" );
-			console.log( "Error: " + errorThrown );
-			console.log( "Status: " + status );
-			console.dir( xhr );
-		},
-	});
 };
 
 $(document).ready(function() {
-	$("#form-signup").submit(signup);
-	$("#form-signin").submit(signin);
-	$("#new-article").submit(new_article);
-	$("button[name='delete']").click(delete_article);
+	$("#form-signup").submit(my_prj.signup);
+	$("#form-signin").submit(my_prj.signin);
+	//$("#new-article").submit(new_article);
+	//$("button[name='delete']").click(delete_article);
+
+	$("#btnPreview").click(my_prj.preview);
+	$("#btnPreBack").click(my_prj.back);
+	$("#btnSubmit").click(my_prj.createPost);
+
 });

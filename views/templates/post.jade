@@ -1,0 +1,20 @@
+include mixin.jade
+
+extends ../layout/layout
+
+block content
+  .row
+    .col-xs-12.col-md-8
+      .card
+        h1= post.title
+        .time
+          +dateFormatOut(post.postTime)
+          span.author 作者：
+            a(href="/u/" + post.author.name)= post.author.name
+          span.category 分类：
+            a(href="/c/" + post.category)
+              +cateToString(post.category)
+        .content
+          !=post.contentAfterMarked
+
+    .col-xs-12.col-md-4 热门文章

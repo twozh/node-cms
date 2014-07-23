@@ -21,8 +21,8 @@ var postSchema = new Schema({
 });
 
 postSchema.statics.create = function(obj, cb){
-	var new_post = new Post(obj);
-	new_post.save(function(err){
+	var newPost = new Post(obj);
+	newPost.save(function(err){
 		if (err) {
 			logger.error(err);
 			return cb(err);
@@ -90,6 +90,36 @@ postSchema.statics.postsByCategory = function(category, cb){
 		logger.debug(posts.length);
 		cb(null, posts);
 	});
+};
+
+postSchema.statics.postsByDate = function(startDate, stopDate, cb){
+	Post.find()
+		.where('postTime').gte(startDate).lte(stopDate)
+		.sort('-postTime')
+		.populate('author')
+		.exec(function(err, posts){
+			if(err){
+				logger.error(err);
+				return cb(err);
+			}
+			logger.debug(posts.length);
+			cb(null, posts);
+		});
+};
+
+postSchema.statics.postByDateAndUrl = function(startDate, stopDate, url, cb){
+	Post.find({url: url})
+		.where('postTime').gte(startDate).lte(stopDate)
+		.sort('-postTime')
+		.populate('author')
+		.exec(function(err, posts){
+			if(err){
+				logger.error(err);
+				return cb(err);
+			}
+			logger.debug(posts.length);
+			cb(null, posts);
+		});
 };
 
 var Post = mongoose.model('Post', postSchema);

@@ -3,7 +3,8 @@ var router = express.Router();
 var logger = require('tracer').colorConsole();
 var User = require('../models/User.js');
 var Post = require('../models/Post.js');
-
+var marked = require('marked');
+var util = require('./utility.js');
 
 /* signup/in/out */
 var signup = function(req, res){
@@ -52,7 +53,7 @@ var signout = function(req, res){
 	});
 };
 
-/* post view */
+/* view post */
 
 /* render posts */
 var renderPosts = function(err, posts, req, res){
@@ -66,6 +67,11 @@ var renderPosts = function(err, posts, req, res){
 		render.title = "404 page not found";
 		render.message = err.message;
 		return res.render('../views/error.jade', render);
+	}
+
+	for (var i=0; i<posts.length; i++){
+		posts[i].dateString = util.dateToString(posts[i].postTime);
+		posts[i].contentAfterMarked = marked(posts[i].content.full);
 	}
 
 	return res.render('templates/posts.jade', render);
@@ -89,6 +95,165 @@ var postsByCategoryCtrl = function(req, res){
 	});
 };
 
+var postsByYear = function(req, res){
+	var year = parseInt(req.params[0]);
+	var startDate = new Date();
+	var endDate   = new Date();
+	startDate.setFullYear(year, 0, 1);
+	startDate.setHours(0, 0, 0, 0);
+	endDate.setFullYear(year+1, 0, 1);
+	endDate.setHours(0, 0, 0, 0);
+
+	logger.debug(startDate, '  ', endDate);
+
+	Post.postsByDate(startDate, endDate, function(err, posts){
+		return renderPosts(err, posts, req, res);
+	});
+};
+
+var postsByMonth = function(req, res){
+	var year  = parseInt(req.params[0]);
+	var month = parseInt(req.params[1]);
+	if (month <= 0 || month > 12){
+		return renderPosts(new Error("Month is invalid."), null, req, res);
+	}
+
+	var startDate = new Date();
+	var endDate   = new Date();
+	startDate.setFullYear(year, month-1, 1);
+	startDate.setHours(0, 0, 0, 0);
+	endDate.setFullYear(year, month, 1);
+	endDate.setHours(0, 0, 0, 0);
+	logger.debug(startDate, '  ', endDate);
+	Post.postsByDate(startDate, endDate, function(err, posts){
+		return renderPosts(err, posts, req, res);
+	});
+};
+
+var postsByDate = function(req, res){
+	var year  = parseInt(req.params[0]);
+	var month = parseInt(req.params[1]);
+	var date  = parseInt(req.params[2]);
+	if (month <= 0 || month > 12){
+		return renderPosts(new Error("Month is invalid."), null, req, res);
+	}
+	if (date <= 0 || date > 31){
+		return renderPosts(new Error("Date is invalid."), null, req, res);
+	}
+
+	var startDate = new Date();
+	var endDate   = new Date();
+	startDate.setFullYear(year, month-1, date);
+	startDate.setHours(0, 0, 0, 0);
+	endDate.setFullYear(year, month-1, date+1);
+	endDate.setHours(0, 0, 0, 0);
+	logger.debug(startDate, '  ', endDate);
+	Post.postsByDate(startDate, endDate, function(err, posts){
+		return renderPosts(err, posts, req, res);
+	});
+};
+
+var postsByDaterangeCtrl = function(req, res){
+	/* validate year */
+	var d = new Date();
+	if (req.params[0] > d.getFullYear() || req.params[0] < 1900){
+		return renderPosts(new Error("Year is invalid."), null, req, res);
+	}
+
+	if (req.params[1] === undefined){
+		return postsByYear(req, res);
+	} else if(req.params[2] === undefined){
+		return postsByMonth(req, res);
+	} else {
+		return postsByDate(req, res);
+	}
+};
+
+var postSingle = function(req, res){
+	var year  = parseInt(req.params[0]);
+	var month = parseInt(req.params[1]);
+	var date  = parseInt(req.params[2]);
+
+	/* validate year */
+	var d = new Date();
+	if (year > d.getFullYear() || year < 1900){
+		return renderPosts(new Error("Year is invalid."), null, req, res);
+	}
+	if (month <= 0 || month > 12){
+		return renderPosts(new Error("Month is invalid."), null, req, res);
+	}
+	if (date <= 0 || date > 31){
+		return renderPosts(new Error("Date is invalid."), null, req, res);
+	}
+
+	var url = req.params[3];
+
+	var render = {
+		username: req.session.username,
+	};
+
+	var startDate = new Date();
+	var endDate   = new Date();
+	startDate.setFullYear(year, month-1, date);
+	startDate.setHours(0, 0, 0, 0);
+	endDate.setFullYear(year, month-1, date+1);
+	endDate.setHours(0, 0, 0, 0);
+
+	Post.postByDateAndUrl(startDate, endDate, url, function(err, posts){
+		if (err){
+			logger.error(err);
+			render.title = "Error";
+			render.message = err.message;
+			return res.render('../views/error.jade', render);
+		}
+
+		logger.debug(posts);
+		if (posts.length === 0){
+			render.title = "Error";
+			render.message = "Not found";
+			return res.render('../views/error.jade', render);
+		}
+
+		render.post = posts[0];
+		render.post.contentAfterMarked = marked(posts[0].content.full);
+
+		return res.render('templates/post.jade', render);
+	});
+
+
+};
+
+/* new post */
+var newPostGet = function(req, res){
+	if (req.session.auth !== true){
+		return res.redirect("/signin");
+	}
+	var render = {
+		username: req.session.username,
+	};
+
+	return res.render('templates/new-post.jade', render);
+};
+
+var newPostPost = function(req, res){
+	if (req.session.auth !== true){
+		return res.redirect("/signin");
+	}
+
+	logger.debug(req.body);
+	var newPostData = req.body;
+	newPostData.author = req.session.userid;
+	Post.create(newPostData, function(err){
+		if (err){
+			logger.error(err);
+			return res.send({status: 'err', msg: err.message});
+		}
+		res.send({status: 'succ', msg: "Create new article success."});
+	});
+};
+
+
+
 /* GET home page. */
 router.get('/', postsAll);
 
@@ -99,12 +264,18 @@ router.get('/signout', signout);
 router.post('/signup', register);
 router.post('/signin', login);
 
-/* post view */
+/* view post */
 router.get('/u/:username', postsByUserCtrl);
 router.get('/c/:category', postsByCategoryCtrl);
-//router.get('/p/:url', post);
+router.get(/^\/(\d{4})\/?$/, postsByDaterangeCtrl);
+router.get(/^\/(\d{4})\/(\d{2})\/?$/, postsByDaterangeCtrl);
+router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/?$/, postsByDaterangeCtrl);
+router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/([\w-]+)$/, postSingle);
 
-//router.get('/category/:cate', cate);
+
+/* new post */
+router.get('/new', newPostGet);
+router.post('/new', newPostPost);
 
 
 module.exports = router;

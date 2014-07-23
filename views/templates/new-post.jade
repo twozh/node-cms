@@ -1,0 +1,51 @@
+include mixin.jade
+
+extends ../layout/layout
+
+block content
+  form#formNewPost(name="formNewPost")
+    h4 新建文章
+    br
+    .form-group
+      label 文章标题
+      input#tilte.form-control(required, name="title")
+    .form-group
+      label url
+      input#url.form-control(required, name="url")
+    .form-group
+      label 文章摘要
+      textarea#brief.form-control(placeholder="Enter text ...", rows="3", name="brief", required)
+    .form-group
+      label 文章内容(markdown)
+      textarea#content.form-control(placeholder="Enter text ...", rows="12", name="content", required)
+
+    .form-group
+      label 文章分类
+      p
+      label.radio-inline
+        input#radio1(type="radio", name="category", value="tech", required)
+        | 技术
+      label.radio-inline
+        input#radio2(type="radio", name="category", value="business", required)
+        | 业界
+
+    button#btnPreview.btn.btn-default 预览
+
+  div#preview.hidden
+    h4 预览文章
+    h1#preTitle yulan
+    hr
+    div.well
+      span
+        strong 摘要:&nbsp
+      span#preBrief
+    br
+    div#preContent
+    br
+    br
+    button#btnPreBack.btn.btn-default 返回
+    button#btnSubmit.btn.btn-default 提交
+
+block scripts
+  script(src="/marked/lib/marked.js")
+

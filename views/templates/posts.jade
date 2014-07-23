@@ -7,6 +7,9 @@ block content
     .col-xs-12.col-md-8
       if (posts && posts.length)
         each post in posts
-          +addPostCard(post, null)
+          +addPostCard(post)
 
     .col-xs-12.col-md-4 热门文章
+
+block scripts
+  script(src="/marked/lib/marked.js")
