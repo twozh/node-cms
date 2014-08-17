@@ -1,0 +1,56 @@
+@title-font-size: 28px;
+@content-h1-font-size: 24px;
+@content-h2-font-size: 20px;
+@content-font-size: 18px;
+
+@post-font-color: #333;
+@post-font-color-gray: lighten(@post-font-color, 30%);
+
+@theme-color: green;
+@theme-color-light: desaturate(@theme-color, 30%);
+
+a{
+  color: @post-font-color;
+  &:hover{
+    color: @theme-color-light;
+  }
+}
+
+.card{
+  padding-bottom: 32px;
+  h1{
+    font-size: @title-font-size;
+    font-weight: bolder;
+  }
+  .time{
+    color: @post-font-color-gray;
+    font-style: italic;
+    a{
+      color: @post-font-color-gray;
+      &:hover{
+        color: @theme-color-light;
+      }
+    }
+  }
+  .author{
+    margin-left: 12px;
+  }
+  .category{
+    margin-left: 12px;
+  }
+  .content{
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+}
+.content{
+  h1{
+    font-size: @content-h1-font-size;
+  }
+  h2{
+    font-size: @content-h2-font-size;
+  }
+  font-size: @content-font-size;
+}
+
+

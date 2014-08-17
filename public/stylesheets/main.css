@@ -1,0 +1,43 @@
+a {
+  color: #333333;
+}
+a:hover {
+  color: #136d13;
+}
+.card {
+  padding-bottom: 32px;
+}
+.card h1 {
+  font-size: 28px;
+  font-weight: bolder;
+}
+.card .time {
+  color: #808080;
+  font-style: italic;
+}
+.card .time a {
+  color: #808080;
+}
+.card .time a:hover {
+  color: #136d13;
+}
+.card .author {
+  margin-left: 12px;
+}
+.card .category {
+  margin-left: 12px;
+}
+.card .content {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+.content {
+  font-size: 18px;
+}
+.content h1 {
+  font-size: 24px;
+}
+.content h2 {
+  font-size: 20px;
+}
+/*# sourceMappingURL=custom-bootstrap.css.map */

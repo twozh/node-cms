@@ -26,7 +26,8 @@ module.exports = function(grunt) {
 				},
 
 				files: {
-					'public/stylesheets/custom-bootstrap.css': 'public/stylesheets/custom-bootstrap.less'
+					'public/stylesheets/custom-bootstrap.css': 'public/stylesheets/custom-bootstrap.less',
+					'public/stylesheets/main.css': 'public/stylesheets/main.less'
 				}
 			}
 		}

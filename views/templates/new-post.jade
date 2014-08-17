@@ -3,6 +3,45 @@ include mixin.jade
 extends ../layout/layout
 
 block content
+  .row
+    .col-xs-6.col-sm-6.col-md6.col-lg-6
+      form#formNewPost(name="formNewPost")
+        h4 新建文章
+        br
+        .form-group
+          label 文章标题
+          input#tilte.form-control(required, name="title")
+        .form-group
+          label url
+          input#url.form-control(required, name="url")
+        .form-group
+          label 文章摘要
+          textarea#brief.form-control(placeholder="Enter text ...", rows="3", name="brief", required)
+        .form-group
+          label 文章内容(markdown)
+          textarea#content.form-control(placeholder="Enter text ...", rows="12", name="content", required)
+
+        .form-group
+          label 文章分类
+          p
+          label.radio-inline
+            input#radio1(type="radio", name="category", value="tech", required)
+            | 技术
+          label.radio-inline
+            input#radio2(type="radio", name="category", value="business", required)
+            | 业界
+
+    .col-xs-6.col-sm-6.col-md6.col-lg-6
+      h4 预览文章
+      h1#preTitle yulan
+      hr
+      div.well
+        span
+          strong 摘要:&nbsp
+        span#preBrief
+      br
+      div#preContent
+
   form#formNewPost(name="formNewPost")
     h4 新建文章
     br

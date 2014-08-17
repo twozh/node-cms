@@ -2,33 +2,9 @@ body {
   /* margin : 15px 0px 0px 0px; */
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-a {
-    color: #00B7FF;
-}
+
 .red{
   color: red;
-}
-.card{
-  padding-bottom: 32px;
-}
-.card h1{
-  font-size: 24px;
-}
-.card .author{
-  margin-left: 12px;
-}
-.card .category{
-  margin-left: 12px;
-}
-.card .content{
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-.card .more{
-  margin-top: 8px;
-}
-.card a{
-  color: #333;
 }
 
 .form-signin {

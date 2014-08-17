@@ -1,5 +1,18 @@
 include mixin.jade
 
+mixin addPostCard(post)
+  .card
+    h1: a(href="/" + post.dateString + "/" + post.url)= post.title
+    .time
+      +dateFormatOut(post.postTime)
+      span.author 作者：
+        a(href="/u/" + post.author.name)= post.author.name
+      span.category 分类：
+        a(href="/c/" + post.category)
+          +cateToString(post.category)
+    .content
+      !=post.content.brief
+
 extends ../layout/layout
 
 block content
