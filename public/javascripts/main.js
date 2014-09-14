@@ -104,6 +104,13 @@ createPost: function(e){
 	});
 },
 
+keyupTitle: function(){
+	$("#preTitle").html($("#title").val());
+},
+
+keyupUrl: function(){
+	$("#preUrl").html($("#url").val());
+},
 
 };
 
@@ -116,5 +123,8 @@ $(document).ready(function() {
 	$("#btnPreview").click(my_prj.preview);
 	$("#btnPreBack").click(my_prj.back);
 	$("#btnSubmit").click(my_prj.createPost);
+
+	$("#title").keyup(my_prj.keyupTitle);
+	$("#url").keyup(my_prj.keyupUrl);
 
 });
