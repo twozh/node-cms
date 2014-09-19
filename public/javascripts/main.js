@@ -83,8 +83,12 @@ back: function(e){
 },
 
 createPost: function(e){
+	if(!document.forms.formNewPost.checkValidity()){
+		return;
+	}
+
 	var post = {};
-	post.title = $("#tilte").val();
+	post.title = $("#title").val();
 	//post.author, attach in server side
 	post.category = $("input[name='category']:checked").val();
 	post.content = {};
@@ -112,13 +116,21 @@ keyupUrl: function(){
 	$("#preUrl").html($("#url").val());
 },
 
+keyupBrief: function(){
+	$("#preBrief").html($("#brief").val());
+},
+
+keyupContent: function(){
+	var v = $("#content").val();
+	v = marked(v);
+	$("#preContent").html(v);
+},
+
 };
 
 $(document).ready(function() {
 	$("#form-signup").submit(my_prj.signup);
 	$("#form-signin").submit(my_prj.signin);
-	//$("#new-article").submit(new_article);
-	//$("button[name='delete']").click(delete_article);
 
 	$("#btnPreview").click(my_prj.preview);
 	$("#btnPreBack").click(my_prj.back);
@@ -126,5 +138,9 @@ $(document).ready(function() {
 
 	$("#title").keyup(my_prj.keyupTitle);
 	$("#url").keyup(my_prj.keyupUrl);
+	$("#brief").keyup(my_prj.keyupBrief);
+	$("#content").keyup(my_prj.keyupContent);
+
+	$("#submit").click(my_prj.createPost);
 
 });
