@@ -22,6 +22,11 @@ block content
           textarea#content.form-control(placeholder="Enter text ...", rows="12", name="content", required)
 
         .form-group
+          lablel image
+          input(type="file", name="upload")
+          button#upload.btn.btn-primary shangchuan
+
+        .form-group
           label 文章分类
           p
           label.radio-inline
@@ -30,6 +35,7 @@ block content
           label.radio-inline
             input#radio2(type="radio", name="category", value="business", required)
             | 业界
+        button#btnSubmit.btn.btn-primary 提交
 
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       h4 预览文章
@@ -42,7 +48,6 @@ block content
         span#preBrief
       br
       div#preContent
-  button#submit.btn.btn-primary 提交
 
 block scripts
   script(src="/marked/lib/marked.js")

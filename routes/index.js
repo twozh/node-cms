@@ -5,6 +5,9 @@ var User = require('../models/User.js');
 var Post = require('../models/Post.js');
 var marked = require('marked');
 var util = require('./utility.js');
+var formidable = require('formidable');
+var utilSys = require('util');
+var fs = require('fs');
 
 /* signup/in/out */
 var signup = function(req, res){
@@ -252,6 +255,27 @@ var newPostPost = function(req, res){
 	});
 };
 
+var upload = function(req, res){
+	var uploadPath = "public/image/upload/";
+	var d = new Date();
+	
+	/* check or create dir, name by year */
+	uploadPath += d.getFullYear();
+	util.mkdirSync(uploadPath);
+
+	/* check or create dir, name by month */
+	uploadPath += "/" + (d.getMonth()+1);
+	util.mkdirSync(uploadPath);
+
+	var form = new formidable.IncomingForm();
+	form.uploadDir = uploadPath;
+	form.parse(req, function(err, fields, files) {
+		res.writeHead(200, {'content-type': 'text/plain'});
+		res.write('received upload:\n\n');
+		res.end(utilSys.inspect({fields: fields, files: files}));
+	});
+
+};
 
 
 /* GET home page. */
@@ -276,6 +300,6 @@ router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/([\w-]+)$/, postSingle);
 /* new post */
 router.get('/new', newPostGet);
 router.post('/new', newPostPost);
-
+router.post('/upload', upload);
 
 module.exports = router;

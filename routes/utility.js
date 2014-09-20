@@ -1,3 +1,6 @@
+var fs = require('fs');
+var logger = require('tracer').colorConsole();
+
 exports.dateToString = function(date) {
 	var year = date.getFullYear();
 	var month = date.getMonth()+1;
@@ -10,4 +13,18 @@ exports.dateToString = function(date) {
 	}
 
 	return year+'/'+month+'/'+day;
+};
+
+
+exports.mkdirSync = function (path) {
+	//logger.debug(path);
+
+	try {
+		fs.mkdirSync(path);
+	} catch(e) {
+		if (e.code != 'EEXIST'){
+			logger.error(e);
+			throw e;  	
+		}
+	}
 };

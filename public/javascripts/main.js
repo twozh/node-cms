@@ -126,6 +126,30 @@ keyupContent: function(){
 	$("#preContent").html(v);
 },
 
+upload: function(e){
+	e.preventDefault();
+	var v = $("input[name='upload']").val();
+	console.log($("input[name='upload']").val());
+	if (v === ''){
+		console.log("nothing");
+		return;
+	}
+
+	var fd = new FormData();
+	fd.append("image", $("input[name='upload']")[0].files[0]);
+	$.ajax({
+		url: "/upload",
+		data: fd,
+		processData: false,
+		contentType: false,
+		type: "POST",
+		success: function(data){
+			alert(data);
+		}
+	});
+
+}
+
 };
 
 $(document).ready(function() {
@@ -142,5 +166,5 @@ $(document).ready(function() {
 	$("#content").keyup(my_prj.keyupContent);
 
 	$("#submit").click(my_prj.createPost);
-
+	$("#upload").click(my_prj.upload);
 });
