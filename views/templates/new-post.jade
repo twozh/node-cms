@@ -2,7 +2,10 @@ include mixin.jade
 
 extends ../layout/layout
 
+
+
 block content
+
   .row
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       form#formNewPost(name="formNewPost")
@@ -10,21 +13,26 @@ block content
         br
         .form-group
           label 文章标题
-          input#title.form-control(required, name="title")
+          input#title.form-control(required, name="title", value=post.title)
         .form-group
           label url
-          input#url.form-control(required, name="url")
+          input#url.form-control(required, name="url", value=post.url)
         .form-group
           label 文章摘要
-          textarea#brief.form-control(placeholder="Enter text ...", rows="3", name="brief", required)
+          - var brief = post.content
+          - if (brief) brief = brief.brief
+          textarea#brief.form-control(rows="3", name="brief", required) #{brief} 
         .form-group
+          - var content = post.content
+          - if (content) content = content.full
           label 文章内容(markdown)
-          textarea#content.form-control(placeholder="Enter text ...", rows="12", name="content", required)
-
+          textarea#content.form-control(rows="12", name="content", required) #{content}          
         .form-group
           lablel image
-          input(type="file", name="upload")
+          input.form-control(type="file", name="upload")
           button#upload.btn.btn-primary shangchuan
+          p#image
+        
 
         .form-group
           label 文章分类
@@ -35,7 +43,7 @@ block content
           label.radio-inline
             input#radio2(type="radio", name="category", value="business", required)
             | 业界
-        button#btnSubmit.btn.btn-primary 提交
+        button#btnSubmit.btn.btn-primary(fileid=post._id) 提交
 
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       h4 预览文章
@@ -51,4 +59,6 @@ block content
 
 block scripts
   script(src="/marked/lib/marked.js")
+  script.
+    my_prj.fresh();
 

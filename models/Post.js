@@ -15,7 +15,7 @@ var postSchema = new Schema({
 	},
 	postTime: {type: Date, default: Date.now, required: true},
 	state	: {type: String, enum: ['draft', 'published']},
-	image	: String,
+	image	: [String],
 	url		: {type: String, required: true},
 
 });
@@ -30,6 +30,16 @@ postSchema.statics.create = function(obj, cb){
 		cb(null);
 	});
 };
+
+//postSchema.statics.update = function(id, obj, cb){
+//	Post.findByIdAndUpdate(id, obj, function(err, post){
+//		if (err){
+//			logger.error(err);
+//			return cb(err);
+//		}
+//		cb(null);
+//	});
+//};
 
 postSchema.statics.postsAll = function(cb){
 	Post.find().sort('-postTime').populate('author').exec(function(err, posts){
@@ -121,6 +131,17 @@ postSchema.statics.postByDateAndUrl = function(startDate, stopDate, url, cb){
 			cb(null, posts);
 		});
 };
+
+postSchema.statics.postByPostId = function(postid, cb){
+	Post.findById(postid, function(err, post){
+		if(err){
+			logger.error(err);
+			return cb(err);
+		}
+		cb(null, post);
+	});
+};
+
 
 var Post = mongoose.model('Post', postSchema);
 

@@ -231,28 +231,60 @@ var newPostGet = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/signin");
 	}
+
 	var render = {
 		username: req.session.username,
+		fileid: req.params.postid,
+		post: {},
 	};
 
-	return res.render('templates/new-post.jade', render);
+	logger.debug(req.params.postid);
+	if (req.params.postid){
+		Post.postByPostId(req.params.postid, function(err, post){
+			if (err){
+
+			} else{
+				render.post = post;
+				logger.debug(post);
+			}
+			
+			return res.render('templates/new-post.jade', render);
+		});
+	} else{
+		return res.render('templates/new-post.jade', render);
+	}	
 };
 
 var newPostPost = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/signin");
-	}
+	}	
 
 	logger.debug(req.body);
-	var newPostData = req.body;
-	newPostData.author = req.session.userid;
-	Post.create(newPostData, function(err){
+	var newPost = req.body;
+	newPost.author = req.session.userid;
+
+	var cb = function(err){
 		if (err){
 			logger.error(err);
 			return res.send({status: 'err', msg: err.message});
 		}
-		res.send({status: 'succ', msg: "Create new article success."});
-	});
+		res.send({status: 'succ', msg: "Create/Update new article success."});	
+	};
+
+	if (req.body.postid){
+		Post.update(req.body.postid, newPost, cb);
+	} else{
+		Post.create(newPost, cb);
+	}
+
+	//Post.create(newPost, function(err){
+	//	if (err){
+	//		logger.error(err);
+	//		return res.send({status: 'err', msg: err.message});
+	//	}
+	//	res.send({status: 'succ', msg: "Create new article success."});
+	//});
 };
 
 var upload = function(req, res){
@@ -264,19 +296,52 @@ var upload = function(req, res){
 	util.mkdirSync(uploadPath);
 
 	/* check or create dir, name by month */
-	uploadPath += "/" + (d.getMonth()+1);
+	uploadPath += "/" + (d.getMonth()+1) + "/";
 	util.mkdirSync(uploadPath);
 
 	var form = new formidable.IncomingForm();
 	form.uploadDir = uploadPath;
+
 	form.parse(req, function(err, fields, files) {
-		res.writeHead(200, {'content-type': 'text/plain'});
-		res.write('received upload:\n\n');
-		res.end(utilSys.inspect({fields: fields, files: files}));
+		logger.debug(fields, files);
+		var image = files.image;
+		var imgsrc = uploadPath+d.getTime()+image.name.substr(-4);
+		fs.rename(image.path, imgsrc, function(err){
+			if (err){
+				logger.error(err);
+				return res.send({status: 'err', msg: "fs.rename fail"});	
+			}
+			logger.debug("upload file name is", imgsrc);
+			return res.send({status: 'succ', 
+							 msg: "Upload succ.",
+							 path: imgsrc.substr(7),
+							});
+		});
 	});
 
 };
 
+var deleteImg = function(req, res){
+	logger.debug(req.body);
+
+	var delPath = "public/" + req.body.path;
+	fs.unlink(delPath, function(err){
+		if (err)
+			logger.error(err);
+
+		res.send({status: "succ", msg: "del succ."});
+	});	
+};
+
+var admin = function(req, res){
+	if (req.session.auth !== true){
+		return res.redirect("/signin");
+	}
+
+	Post.postsByUser(req.params.username, function(err, posts){
+		return res.render('templates/admin.jade', {posts: posts});
+	});	
+};
 
 /* GET home page. */
 router.get('/', postsAll);
@@ -296,10 +361,15 @@ router.get(/^\/(\d{4})\/(\d{2})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/([\w-]+)$/, postSingle);
 
+/* user panel */
+router.get('/admin/:username', admin);
 
 /* new post */
 router.get('/new', newPostGet);
+router.get('/new/:postid', newPostGet);
+
 router.post('/new', newPostPost);
-router.post('/upload', upload);
+router.post('/new/upload', upload);
+router.post('/new/delete', deleteImg);
 
 module.exports = router;

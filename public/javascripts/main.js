@@ -51,7 +51,7 @@ signin: function (event){
 				$( "#msg" ).addClass('red');
 			} else {
 				//location.href = '/u/' + data.name;
-				location.href = '/new';
+				location.href = '/admin/' + data.name;
 			}
 		}).fail(function(){
 			alert( "Sorry, there was a problem!" );
@@ -83,6 +83,7 @@ back: function(e){
 },
 
 createPost: function(e){
+	console.log($("#btnSubmit").attr("fileid"));
 	if(!document.forms.formNewPost.checkValidity()){
 		return;
 	}
@@ -95,6 +96,11 @@ createPost: function(e){
 	post.content.brief = $("#brief").val();
 	post.content.full  = $("#content").val();
 	post.url = $("#url").val();
+	post.image = [];
+	post.postid = $("#btnSubmit").attr("fileid");
+	$("#image").find("img").each(function(index, ele){
+		post.image.push($(this).attr("src"));		
+	});
 
 	$.post("new", post, function(data){
 		console.log(data);
@@ -108,22 +114,28 @@ createPost: function(e){
 	});
 },
 
-keyupTitle: function(){
+fresh: function(){
 	$("#preTitle").html($("#title").val());
-},
-
-keyupUrl: function(){
 	$("#preUrl").html($("#url").val());
-},
-
-keyupBrief: function(){
 	$("#preBrief").html($("#brief").val());
-},
-
-keyupContent: function(){
 	var v = $("#content").val();
 	v = marked(v);
 	$("#preContent").html(v);
+},
+
+deleteImg: function(e){
+	$.post("new/delete", 
+		{path: $(e.target).prev().attr('src')}, 
+		function(data){
+			console.log(data);
+			if (data.status === 'err'){
+				alert(data.msg);
+			} else{
+				$(e.target).parent().remove();
+			}
+		}).fail(function(){
+		alert( "Sorry, there was a problem!" );
+	});
 },
 
 upload: function(e){
@@ -138,13 +150,20 @@ upload: function(e){
 	var fd = new FormData();
 	fd.append("image", $("input[name='upload']")[0].files[0]);
 	$.ajax({
-		url: "/upload",
+		url: "/new/upload",
 		data: fd,
 		processData: false,
 		contentType: false,
 		type: "POST",
-		success: function(data){
-			alert(data);
+		success: function(ret){
+			console.log(ret);
+			var domStr = "<p><img src=";
+			domStr += ret.path;
+			domStr += " width=48px height=48px align='bottom'>";
+			domStr += ret.path + "<input type='button' value='del' class='btn btn-primary delete'>" + "</p>";
+
+			$("#image").append($(domStr));
+			$(".delete").click(my_prj.deleteImg);
 		}
 	});
 
@@ -160,11 +179,10 @@ $(document).ready(function() {
 	$("#btnPreBack").click(my_prj.back);
 	$("#btnSubmit").click(my_prj.createPost);
 
-	$("#title").keyup(my_prj.keyupTitle);
-	$("#url").keyup(my_prj.keyupUrl);
-	$("#brief").keyup(my_prj.keyupBrief);
-	$("#content").keyup(my_prj.keyupContent);
+	$("#title").keyup(my_prj.fresh);
+	$("#url").keyup(my_prj.fresh);
+	$("#brief").keyup(my_prj.fresh);
+	$("#content").keyup(my_prj.fresh);
 
-	$("#submit").click(my_prj.createPost);
 	$("#upload").click(my_prj.upload);
 });
