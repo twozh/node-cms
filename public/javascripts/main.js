@@ -102,7 +102,7 @@ createPost: function(e){
 		post.image.push($(this).attr("src"));		
 	});
 
-	$.post("new", post, function(data){
+	$.post("/new", post, function(data){
 		console.log(data);
 		if (data.status === 'err'){
 			alert(data.msg);
@@ -112,6 +112,21 @@ createPost: function(e){
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
 	});
+},
+
+delPost: function(e){
+	console.log($(e.target).attr("postid"));
+	$.post("/new/delPost", {postid: $(e.target).attr("postid")}, function(data){
+		console.log(data);
+		if (data.status === 'err'){
+			alert(data.msg);
+		} else{
+			$(e.target).attr('disabled', 'disabled');
+		}
+	}).fail(function(){
+		alert( "Sorry, there was a problem!" );
+	});
+
 },
 
 fresh: function(){
@@ -124,7 +139,7 @@ fresh: function(){
 },
 
 deleteImg: function(e){
-	$.post("new/delete", 
+	$.post("/new/delete", 
 		{path: $(e.target).prev().attr('src')}, 
 		function(data){
 			console.log(data);
@@ -134,8 +149,8 @@ deleteImg: function(e){
 				$(e.target).parent().remove();
 			}
 		}).fail(function(){
-		alert( "Sorry, there was a problem!" );
-	});
+			alert( "Sorry, there was a problem!" );
+		});
 },
 
 upload: function(e){
@@ -185,4 +200,5 @@ $(document).ready(function() {
 	$("#content").keyup(my_prj.fresh);
 
 	$("#upload").click(my_prj.upload);
+	$(".delPost").click(my_prj.delPost);
 });

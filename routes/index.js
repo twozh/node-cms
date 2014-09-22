@@ -277,14 +277,21 @@ var newPostPost = function(req, res){
 	} else{
 		Post.create(newPost, cb);
 	}
+};
 
-	//Post.create(newPost, function(err){
-	//	if (err){
-	//		logger.error(err);
-	//		return res.send({status: 'err', msg: err.message});
-	//	}
-	//	res.send({status: 'succ', msg: "Create new article success."});
-	//});
+var delPost = function(req, res){
+	if (req.session.auth !== true){
+		return res.redirect("/signin");
+	}
+
+	Post.delete(req.body.postid, function(err){
+		if (err){
+			logger.error(err);
+			return res.send({status: 'err', msg: err.message});
+		}
+
+		return res.send({status: 'succ', msg: "del post succ."});
+	});
 };
 
 var upload = function(req, res){
@@ -336,9 +343,13 @@ var deleteImg = function(req, res){
 var admin = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/signin");
-	}
+	}	
 
 	Post.postsByUser(req.params.username, function(err, posts){
+		for (var i=0; i<posts.length; i++){
+			posts[i].dateString = util.dateToString(posts[i].postTime);
+		}
+
 		return res.render('templates/admin.jade', {posts: posts});
 	});	
 };
@@ -367,6 +378,7 @@ router.get('/admin/:username', admin);
 /* new post */
 router.get('/new', newPostGet);
 router.get('/new/:postid', newPostGet);
+router.post('/new/delPost', delPost);
 
 router.post('/new', newPostPost);
 router.post('/new/upload', upload);

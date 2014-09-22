@@ -31,15 +31,23 @@ postSchema.statics.create = function(obj, cb){
 	});
 };
 
-//postSchema.statics.update = function(id, obj, cb){
-//	Post.findByIdAndUpdate(id, obj, function(err, post){
-//		if (err){
-//			logger.error(err);
-//			return cb(err);
-//		}
-//		cb(null);
-//	});
-//};
+postSchema.statics.update = function(id, obj, cb){
+	Post.findByIdAndUpdate(id, obj, function(err, post){
+		if (err){
+			return cb(err);
+		}
+		cb(null);
+	});
+};
+
+postSchema.statics.delete = function(id, cb){
+	Post.findByIdAndRemove(id, function(err){
+		if (err){
+			return cb(err);
+		}
+		cb(null);
+	});
+};
 
 postSchema.statics.postsAll = function(cb){
 	Post.find().sort('-postTime').populate('author').exec(function(err, posts){

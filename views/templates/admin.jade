@@ -9,10 +9,11 @@ mixin addPostCard(post)
         a(href="/u/" + post.author.name)= post.author.name
       span.category 分类：
         a(href="/c/" + post.category)
-          +cateToString(post.category)
-      a(href="/new/"+post._id) edit
+          +cateToString(post.category)      
     .content
       !=post.content.brief
+    a.btn.btn-primary(href="/new/"+post._id) edit
+    button.btn.btn-primary.delPost(postid=post.id) delete
 
 extends ../layout/layout
 
@@ -23,4 +24,5 @@ block content
       if (posts && posts.length)
         each post in posts
           +addPostCard(post)
+
 

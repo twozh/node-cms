@@ -1,31 +1,31 @@
 extends layout
 
 block login
-	if userlogin
-		p.navbar-text.navbar-right
-			a.navbar-link(href="/u/" + userlogin)= userlogin
-				| ,  欢迎您
-	else
-		p.navbar-text.navbar-right
-			a.navbar-link(href="/signup") 注册
-		p.navbar-text.navbar-right
-			a.navbar-link(href="/signin") 登陆
+  if userlogin
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/u/" + userlogin)= userlogin
+        | ,  欢迎您
+  else
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/signup") 注册
+    p.navbar-text.navbar-right
+      a.navbar-link(href="/signin") 登陆
 block content
-	.row
-		.col-xs-12.col-md-8
-			if username
-				a.btn.btn-default(type="button", href="/new") 写新文章
-				|&nbsp;&nbsp;
-				a.btn.btn-default(type="button", href="/signout") 登出
-			if (articles && articles.length)
-				each article in articles
-					+card_article(article, username)
-			else
-				.card
-					h1 您尚未发布文章
+  .row
+    .col-xs-12.col-md-8
+      if username
+        a.btn.btn-default(type="button", href="/new") 写新文章
+        |&nbsp;&nbsp;
+        a.btn.btn-default(type="button", href="/signout") 登出
+      if (articles && articles.length)
+        each article in articles
+          +card_article(article, username)
+      else
+        .card
+          h1 您尚未发布文章
 
-		.col-md-4
-			if username
-				h1= username
-			else
-				|热门文章
+    .col-md-4
+      if username
+        h1= username
+      else
+        |热门文章
