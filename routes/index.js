@@ -9,6 +9,17 @@ var formidable = require('formidable');
 var utilSys = require('util');
 var fs = require('fs');
 
+marked.setOptions({
+	renderer: new marked.Renderer(),
+	gfm: true,
+	tables: true,
+	breaks: false,
+	pedantic: false,
+	sanitize: true,
+	smartLists: true,
+	smartypants: false
+});
+
 /* signup/in/out */
 var signup = function(req, res){
 	res.render('templates/signup.jade', {title: 'Signup'});
@@ -344,13 +355,17 @@ var admin = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/signin");
 	}	
+	var render = {
+		username: req.session.username
+	};
 
 	Post.postsByUser(req.params.username, function(err, posts){
 		for (var i=0; i<posts.length; i++){
 			posts[i].dateString = util.dateToString(posts[i].postTime);
 		}
 
-		return res.render('templates/admin.jade', {posts: posts});
+		render.posts = posts;
+		return res.render('templates/admin.jade', render);
 	});	
 };
 

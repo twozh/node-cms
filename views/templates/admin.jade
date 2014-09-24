@@ -2,7 +2,7 @@ include mixin.jade
 
 mixin addPostCard(post)
   .card
-    h1: a(href="/" + post.dateString + "/" + post.url)= post.title
+    h3: a(href="/" + post.dateString + "/" + post.url)= post.title
     .time
       +dateFormatOut(post.postTime)
       span.author 作者：
@@ -10,19 +10,23 @@ mixin addPostCard(post)
       span.category 分类：
         a(href="/c/" + post.category)
           +cateToString(post.category)      
-    .content
-      !=post.content.brief
-    a.btn.btn-primary(href="/new/"+post._id) edit
-    button.btn.btn-primary.delPost(postid=post.id) delete
+      blockquote 摘要:
+        !=post.content.brief
+    a.btn.btn-primary(href="/new/"+post._id) 修改
+    button.btn.btn-primary.delPost(postid=post.id) 删除
 
 extends ../layout/layout
 
 block content
-  button.btn.btn-primary New
+  a.btn.btn-lg.btn-primary(href="/new") 写新文章
   .row
     .col-xs-12.col-md-8
       if (posts && posts.length)
         each post in posts
           +addPostCard(post)
+    .col-md-4
+      h3 文章管理
+      h4 
+        =username
 
 

@@ -2,7 +2,7 @@ include mixin.jade
 
 mixin addPostCard(post)
   .card
-    h1: a(href="/" + post.dateString + "/" + post.url)= post.title
+    h3: a(href="/" + post.dateString + "/" + post.url)= post.title
     .time
       +dateFormatOut(post.postTime)
       span.author 作者：
@@ -10,8 +10,8 @@ mixin addPostCard(post)
       span.category 分类：
         a(href="/c/" + post.category)
           +cateToString(post.category)
-    .content
-      !=post.content.brief
+      blockquote 摘要:
+        !=post.content.brief
 
 extends ../layout/layout
 
@@ -21,8 +21,6 @@ block content
       if (posts && posts.length)
         each post in posts
           +addPostCard(post)
-
-    .col-xs-12.col-md-4 热门文章
 
 block scripts
   script(src="/marked/lib/marked.js")

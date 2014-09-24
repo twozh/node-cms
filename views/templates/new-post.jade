@@ -9,8 +9,6 @@ block content
   .row
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       form#formNewPost(name="formNewPost")
-        h4 新建文章
-        br
         .form-group
           label 文章标题
           input#title.form-control(required, name="title", value=post.title)
@@ -26,14 +24,12 @@ block content
           - var content = post.content
           - if (content) content = content.full
           label 文章内容(markdown)
-          textarea#content.form-control(rows="12", name="content", required) #{content}          
+          textarea#content.form-control(rows="28", name="content", required) #{content}          
         .form-group
           lablel image
           input.form-control(type="file", name="upload")
           button#upload.btn.btn-primary shangchuan
-          p#image
-        
-
+          p#image      
         .form-group
           label 文章分类
           p
@@ -44,21 +40,29 @@ block content
             input#radio2(type="radio", name="category", value="business", required)
             | 业界
         button#btnSubmit.btn.btn-primary(fileid=post._id) 提交
-
     .col-xs-6.col-sm-6.col-md6.col-lg-6
-      h4 预览文章
-      h1#preTitle &nbsp
+      h3#preTitle &nbsp
       p#preUrl &nbsp
       hr
-      div.well
-        span
-          strong 摘要:&nbsp
-        span#preBrief
-      br
-      div#preContent
+      .content
+        blockquote
+          span
+            strong 摘要:&nbsp
+          span#preBrief
+        div#preContent
 
 block scripts
   script(src="/marked/lib/marked.js")
   script.
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      gfm: true,
+      tables: true,
+      breaks: false,
+      pedantic: false,
+      sanitize: true,
+      smartLists: true,
+      smartypants: false
+    });
     my_prj.fresh();
 

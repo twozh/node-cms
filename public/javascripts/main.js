@@ -126,7 +126,6 @@ delPost: function(e){
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
 	});
-
 },
 
 fresh: function(){

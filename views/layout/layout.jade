@@ -31,22 +31,27 @@ html
             li
               a(href="/c/tech") 技术
             li
-              a(href="/c/business") 业界
+              a(href="/c/business") 业界          
 
-          //right side info
-          if username
-            p.navbar-text.navbar-right
-              a.navbar-link(href="/u/" + username)= username
-                | ,  欢迎您
-          else
-            p.navbar-text.navbar-right
-              a.navbar-link(href="/signup") 注册
-            p.navbar-text.navbar-right
-              a.navbar-link(href="/signin") 登陆
-
-    .container
+    .container.body
       //define content
       block content
+
+    hr
+    .container
+      //footer info
+      if username
+        a.navbar-link(href="/admin/" + username)= username
+          | ,  欢迎您
+      else
+        p 
+          a.navbar-link(href="/signup") 注册
+        p
+          a.navbar-link(href="/signin") 登陆
+      br
+      br
+      p.text-center
+        | ©2014 Jiansoft
 
     //only have livereload.js in devlopment!!!
     script(src="//localhost:35729/livereload.js")
