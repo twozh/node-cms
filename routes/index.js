@@ -274,13 +274,16 @@ var newPostPost = function(req, res){
 	logger.debug(req.body);
 	var newPost = req.body;
 	newPost.author = req.session.userid;
-
+	if (!newPost.image){
+		newPost.image=[];
+	}
 	var cb = function(err){
 		if (err){
 			logger.error(err);
 			return res.send({status: 'err', msg: err.message});
 		}
-		res.send({status: 'succ', msg: "Create/Update new article success."});	
+		res.send({status: 'succ', msg: "Create/Update new article success.", name:req.session.username});
+		//res.redirect('/admin/'+req.session.username);
 	};
 
 	if (req.body.postid){
@@ -332,7 +335,7 @@ var upload = function(req, res){
 			logger.debug("upload file name is", imgsrc);
 			return res.send({status: 'succ', 
 							 msg: "Upload succ.",
-							 path: imgsrc.substr(7),
+							 path: imgsrc.substr(6),
 							});
 		});
 	});
@@ -342,7 +345,7 @@ var upload = function(req, res){
 var deleteImg = function(req, res){
 	logger.debug(req.body);
 
-	var delPath = "public/" + req.body.path;
+	var delPath = "public" + req.body.path;
 	fs.unlink(delPath, function(err){
 		if (err)
 			logger.error(err);

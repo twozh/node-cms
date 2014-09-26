@@ -26,18 +26,25 @@ block content
           label 文章内容(markdown)
           textarea#content.form-control(rows="28", name="content", required) #{content}          
         .form-group
-          lablel image
+          label 图片
           input.form-control(type="file", name="upload")
-          button#upload.btn.btn-primary shangchuan
-          p#image      
+          button#upload.btn.btn-primary 上传
+          p#image
+            each img in post.image
+              img(src=img, width="48px", height="48px", align="bottom")
+              ="  "+img
+              input.btn.btn-primary.delete(type="button", value="del")
         .form-group
           label 文章分类
           p
           label.radio-inline
-            input#radio1(type="radio", name="category", value="tech", required)
+            - var checkedTech = false, checkedBusi = false
+            - if (post.category === "tech") checkedTech = true
+            - if (post.category === "business") checkedBusi = true
+            input#radio1(type="radio", name="category", value="tech", required, checked=checkedTech)
             | 技术
           label.radio-inline
-            input#radio2(type="radio", name="category", value="business", required)
+            input#radio2(type="radio", name="category", value="business", required, checked=checkedBusi)
             | 业界
         button#btnSubmit.btn.btn-primary(fileid=post._id) 提交
     .col-xs-6.col-sm-6.col-md6.col-lg-6

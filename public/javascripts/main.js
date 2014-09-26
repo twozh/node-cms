@@ -46,11 +46,9 @@ signin: function (event){
 		};
 		$.post("signin", data, function(ret){
 			console.log(ret);
-			$( "#msg" ).html(ret.msg);
 			if (ret.status === 'err'){
 				$( "#msg" ).addClass('red');
 			} else {
-				//location.href = '/u/' + data.name;
 				location.href = '/admin/' + data.name;
 			}
 		}).fail(function(){
@@ -87,7 +85,7 @@ createPost: function(e){
 	if(!document.forms.formNewPost.checkValidity()){
 		return;
 	}
-
+	e.preventDefault();
 	var post = {};
 	post.title = $("#title").val();
 	//post.author, attach in server side
@@ -101,13 +99,13 @@ createPost: function(e){
 	$("#image").find("img").each(function(index, ele){
 		post.image.push($(this).attr("src"));		
 	});
-
+	console.log(post.image);
 	$.post("/new", post, function(data){
 		console.log(data);
 		if (data.status === 'err'){
 			alert(data.msg);
 		} else{
-			location.href = '/new';
+			location.href = '/admin/'+data.name;
 		}
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
@@ -122,6 +120,7 @@ delPost: function(e){
 			alert(data.msg);
 		} else{
 			$(e.target).attr('disabled', 'disabled');
+			$(e.target).prev().attr('disabled', 'disabled');
 		}
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
@@ -174,7 +173,7 @@ upload: function(e){
 			var domStr = "<p><img src=";
 			domStr += ret.path;
 			domStr += " width=48px height=48px align='bottom'>";
-			domStr += ret.path + "<input type='button' value='del' class='btn btn-primary delete'>" + "</p>";
+			domStr += "  " + ret.path + "<input type='button' value='del' class='btn btn-primary delete'>" + "</p>";
 
 			$("#image").append($(domStr));
 			$(".delete").click(my_prj.deleteImg);
@@ -199,5 +198,6 @@ $(document).ready(function() {
 	$("#content").keyup(my_prj.fresh);
 
 	$("#upload").click(my_prj.upload);
+	$(".delete").click(my_prj.deleteImg);
 	$(".delPost").click(my_prj.delPost);
 });

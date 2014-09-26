@@ -33,6 +33,7 @@ postSchema.statics.create = function(obj, cb){
 
 postSchema.statics.update = function(id, obj, cb){
 	Post.findByIdAndUpdate(id, obj, function(err, post){
+		logger.debug(id, obj);
 		if (err){
 			return cb(err);
 		}
