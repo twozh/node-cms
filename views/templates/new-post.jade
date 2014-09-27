@@ -2,10 +2,7 @@ include mixin.jade
 
 extends ../layout/layout
 
-
-
 block content
-
   .row
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       form#formNewPost(name="formNewPost")
@@ -30,10 +27,11 @@ block content
           input.form-control(type="file", name="upload")
           button#upload.btn.btn-primary 上传
           p#image
-            each img in post.image
-              img(src=img, width="48px", height="48px", align="bottom")
-              ="  "+img
-              input.btn.btn-primary.delete(type="button", value="del")
+            if post.image
+              each img in post.image
+                img(src=img, width="48px", height="48px", align="bottom")
+                ="  "+img
+                input.btn.btn-primary.delete(type="button", value="del")
         .form-group
           label 文章分类
           p
