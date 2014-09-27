@@ -48,4 +48,4 @@ nbproject
 # Folders to ignore
 node_modules
 bower_components
-public/image/upload
+public/image/upload/
