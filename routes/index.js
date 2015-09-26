@@ -220,8 +220,7 @@ var postSingle = function(req, res){
 			render.message = err.message;
 			return res.render('../views/error.jade', render);
 		}
-
-		logger.debug(posts);
+		
 		if (posts.length === 0){
 			render.title = "Error";
 			render.message = "Not found";
@@ -230,7 +229,6 @@ var postSingle = function(req, res){
 
 		render.post = posts[0];
 		render.post.contentAfterMarked = marked(posts[0].content.full);
-
 		return res.render('templates/post.jade', render);
 	});
 

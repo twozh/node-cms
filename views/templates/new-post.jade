@@ -14,12 +14,12 @@ block content
           input#url.form-control(required, name="url", value=post.url)
         .form-group
           label 文章摘要
-          - var brief = post.content
-          - if (brief) brief = brief.brief
+          - var brief = ''
+          - if (post.content) brief = post.content.brief
           textarea#brief.form-control(rows="3", name="brief", required) #{brief} 
         .form-group
-          - var content = post.content
-          - if (content) content = content.full
+          - var content = ''
+          - if (post.content) content = post.content.full
           label 文章内容(markdown)
           textarea#content.form-control(rows="28", name="content", required) #{content}          
         .form-group
