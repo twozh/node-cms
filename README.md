@@ -15,10 +15,19 @@ CMS with node, based on the best practice
 * Post with image
 * Admin system
 
-## how I make this project
+## How I make this project
 ### prepare
 * Ubuntu 12.04LTS with node, mongodb
-* Install globle express generator `npm install -g express-generator`. Then run `express node-cms` to create the express project. Install mongoose, `npm install mongoose --save`. Install tracer, a logger system for debug,  `npm install tracer`. Init bower.json by `bower init`, install jquery and bootstrap with `bower install bootstrap --save`
+* Install globle express generator: 
+  `npm install -g express-generator`. 
+  Then run `express node-cms` to create the express project. 
+  Install mongoose: 
+  `npm install mongoose --save` 
+  Install tracer, a logger system for debug:
+  `npm install tracer`. 
+  Init bower.json by `bower init` 
+  Install jquery and bootstrap:
+  `bower install bootstrap --save`
 
 ### main procedure
 * Install [express-session](https://github.com/expressjs/session) with `npm isntall epxress-session --save`.
