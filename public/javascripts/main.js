@@ -131,8 +131,7 @@ fresh: function(){
 	$("#preTitle").html($("#title").val());
 	$("#preUrl").html($("#url").val());
 	$("#preBrief").html($("#brief").val());
-	var v = $.trim($("#content").val());
-	$("#content").val(v);
+	var v = $("#content").val();
 	v = marked(v);
 	$("#preContent").html(v);
 },
