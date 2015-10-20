@@ -2,7 +2,7 @@ var config = require('../config.js');
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var User = require('./User');
+var User = require('../user').User;
 var logger = require('tracer').colorConsole();
 
 var postSchema = new Schema({
