@@ -6,7 +6,7 @@ mixin addPostCard(post)
     .time
       +dateFormatOut(post.postTime)
       span.author 作者：
-        a(href="/u/" + post.author.name)= post.author.name
+        a(href="/u/" + post.author._id)= post.author.name
       span.category 分类：
         a(href="/c/" + post.category)
           +cateToString(post.category)

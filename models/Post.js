@@ -72,8 +72,8 @@ postSchema.statics.posts_by_author = function(author, cb){
 	});
 };
 
-postSchema.statics.postsByUser = function(name, cb){
-	User.findOne({name: name}, function(err, user){
+postSchema.statics.postsByUser = function(userid, cb){
+	User.findById(userid, function(err, user){
 		if (err){
 			logger.error(err);
 			return cb(err);

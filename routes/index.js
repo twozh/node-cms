@@ -51,7 +51,7 @@ var postsAll = function(req, res){
 };
 
 var postsByUserCtrl = function(req, res){
-	Post.postsByUser(req.params.username, function(err, posts){
+	Post.postsByUser(req.params.userid, function(err, posts){
 		return renderPosts(err, posts, req, res);
 	});
 };
@@ -305,7 +305,7 @@ var deleteImg = function(req, res){
 	});	
 };
 
-var admin = function(req, res){
+var adminView = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/user/login");
 	}	
@@ -313,7 +313,7 @@ var admin = function(req, res){
 		username: req.session.username
 	};
 
-	Post.postsByUser(req.params.username, function(err, posts){
+	Post.postsByUser(req.session.userid, function(err, posts){
 		for (var i=0; i<posts.length; i++){
 			posts[i].dateString = util.dateToString(posts[i].postTime);
 		}
@@ -327,7 +327,7 @@ var admin = function(req, res){
 router.get('/', postsAll);
 
 /* view post */
-router.get('/u/:username', postsByUserCtrl);
+router.get('/u/:userid', postsByUserCtrl);
 router.get('/c/:category', postsByCategoryCtrl);
 router.get(/^\/(\d{4})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/?$/, postsByDaterangeCtrl);
@@ -335,7 +335,7 @@ router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/([\w-]+)$/, postSingle);
 
 /* user panel */
-router.get('/admin/:username', admin);
+router.get('/admin/:username', adminView);
 
 /* new post */
 router.get('/new', newPostGet);
