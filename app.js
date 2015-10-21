@@ -6,14 +6,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var MongoDBStore = require('connect-mongodb-session')(session);
 var bodyParser = require('body-parser');
+var colorConsole = require('tracer').colorConsole();
 var mongoose = require('mongoose');
 mongoose.connect(config.mongoPath);
-var colorConsole = require('tracer').colorConsole();
 
 var routes = require('./routes/index');
 
 var app = express();
+var store = new MongoDBStore({ 
+    uri: config.mongoPath,
+    collection: 'mySessions'
+});
+store.on('error', function(error) {
+    colorConsole.error(error);
+});
 
 // view engine setup
 var views = [
@@ -25,12 +33,22 @@ app.set('view engine', 'jade');
 app.locals.pretty = true;
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 6000000 }}));
+app.use(session({
+    name: config.sessionName,
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie:{maxAge: 1000 * 60 * 60 * 24 * 7},
+    store: store,
+    /* rolling:  Force a cookie to be set on every response.
+       This resets the expiration date. */
+    rolling: true,    
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 //use method-override
@@ -44,7 +62,6 @@ var user = require('./user');
 app.use('/user/api/', user.apiRoute);
 app.use('/user/', user.route);
 app.use(express.static(path.join(__dirname, 'user/public')));
-
 
 app.use('/', routes);
 

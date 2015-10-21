@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "body-parser": "~1.10.2",
+    "connect-mongodb-session": "^1.0.5",
     "cookie-parser": "^1.3.5",
     "debug": "~2.1.1",
     "express": "~4.11.1",
@@ -14,14 +15,14 @@
     "formidable": "^1.0.15",
     "jade": "~1.9.1",
     "marked": "^0.3.5",
+    "method-override": "^2.3.5",
     "mongoose": "~3.8.12",
     "morgan": "~1.5.1",
-    "simple-hash": "^0.1.2",
-    "serve-favicon": "~2.2.0",
-    "tracer": "^0.7.1",
-    "method-override": "^2.3.5",
     "nodemailer": "^1.8.0",
-    "nodemailer-smtp-transport": "^0.1.13"    
+    "nodemailer-smtp-transport": "^0.1.13",
+    "serve-favicon": "~2.2.0",
+    "simple-hash": "^0.1.2",
+    "tracer": "^0.7.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
