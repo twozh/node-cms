@@ -56,6 +56,7 @@ postSchema.statics.postsAll = function(cb){
 			logger.error(err);
 			return cb(err);
 		}
+
 		cb(null, posts);
 	});
 };
@@ -66,7 +67,6 @@ postSchema.statics.posts_by_author = function(author, cb){
 			logger.error(err);
 			return cb(err);
 		}
-		logger.debug(posts.length);
 		cb(null, posts);
 	});
 };

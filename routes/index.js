@@ -200,14 +200,12 @@ var newPostGet = function(req, res){
 		post: {},
 	};
 
-	logger.debug(req.params.postid);
 	if (req.params.postid){
 		Post.postByPostId(req.params.postid, function(err, post){
 			if (err){
-
+				logger.error(err);
 			} else{
 				render.post = post;
-				logger.debug(post);
 			}
 			
 			return res.render('templates/new-post.jade', render);
@@ -217,14 +215,16 @@ var newPostGet = function(req, res){
 	}	
 };
 
-var newPostPost = function(req, res){
+var newPostCtrl = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/user/login");
 	}	
 
-	logger.debug(req.body);
 	var newPost = req.body;
 	newPost.author = req.session.userid;
+	newPost.content = {};
+	newPost.content.brief = newPost['content[brief]'];
+	newPost.content.full = newPost['content[full]'];
 	if (!newPost.image){
 		newPost.image=[];
 	}
@@ -237,8 +237,8 @@ var newPostPost = function(req, res){
 		//res.redirect('/admin/'+req.session.username);
 	};
 
-	if (req.body.postid){
-		Post.update(req.body.postid, newPost, cb);
+	if (newPost.postid){
+		Post.update(newPost.postid, newPost, cb);
 	} else{
 		Post.create(newPost, cb);
 	}
@@ -342,7 +342,7 @@ router.get('/new', newPostGet);
 router.get('/new/:postid', newPostGet);
 router.post('/new/delPost', delPost);
 
-router.post('/new', newPostPost);
+router.post('/new', newPostCtrl);
 router.post('/new/upload', upload);
 router.post('/new/delete', deleteImg);
 

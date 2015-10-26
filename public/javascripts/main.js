@@ -1,63 +1,5 @@
 var my_prj = {
 
-/*
- *  form-signup submit - ajax
- */
-signup: function(event){
-	if ($('#iPass').val().length < 3 || $('#iPass').val() != $('#iPass2').val()){
-		$('.pass').addClass('red');
-	}
-	else{
-		$('.pass').removeClass('red');
-		var data = {
-			name: $('#iName').val(),
-			email: $('#iEmail').val(),
-			pass: $('#iPass').val()
-		};
-		$.post("signup", data, function(data){
-			console.log(data);
-			$( "#msg" ).html(data.msg);
-			if (data.status === 'err'){
-				$( "#msg" ).addClass('red');
-			} else{
-				location.href = '/signin';
-			}
-		}).fail(function(){
-			alert( "Sorry, there was a problem!" );
-		});
-	}
-	return false;
-},
-
-/*
- *  form-signin submit - ajax
- */
-signin: function (event){
-	if ($('#iPass').val().length < 3){
-		$('#lPass').addClass('red');
-		$( "#msg" ).html("Password's length should longer than 3");
-	}
-	else{
-		$('#lPass').removeClass('red');
-
-		var data = {
-			name: $('#iName').val(),
-			pass: $('#iPass').val()
-		};
-		$.post("signin", data, function(ret){
-			console.log(ret);
-			if (ret.status === 'err'){
-				$( "#msg" ).addClass('red');
-			} else {
-				location.href = '/admin/' + data.name;
-			}
-		}).fail(function(){
-			alert( "Sorry, there was a problem!" );
-		});
-	}
-	return false;
-},
-
 preview: function(e){
 	if(!document.forms.formNewPost.checkValidity()){
 		return;
@@ -81,7 +23,6 @@ back: function(e){
 },
 
 createPost: function(e){
-	console.log($("#btnSubmit").attr("fileid"));
 	if(!document.forms.formNewPost.checkValidity()){
 		return;
 	}
@@ -99,7 +40,6 @@ createPost: function(e){
 	$("#image").find("img").each(function(index, ele){
 		post.image.push($(this).attr("src"));		
 	});
-	console.log(post.image);
 	$.post("/new", post, function(data){
 		console.log(data);
 		if (data.status === 'err'){
@@ -185,9 +125,6 @@ upload: function(e){
 };
 
 $(document).ready(function() {
-	$("#form-signup").submit(my_prj.signup);
-	$("#form-signin").submit(my_prj.signin);
-
 	$("#btnPreview").click(my_prj.preview);
 	$("#btnPreBack").click(my_prj.back);
 	$("#btnSubmit").click(my_prj.createPost);
