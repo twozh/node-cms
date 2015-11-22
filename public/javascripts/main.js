@@ -9,7 +9,6 @@ preview: function(e){
 	$("#formNewPost").hide();
 
 	$("#preTitle").html($("#tilte").val());
-	$("#preBrief").html($("#brief").val());
 	$("#preContent").html(marked($("#content").val()));
 
 	$("#preview").removeClass("hidden");
@@ -32,7 +31,6 @@ createPost: function(e){
 	//post.author, attach in server side
 	post.category = $("input[name='category']:checked").val();
 	post.content = {};
-	post.content.brief = $("#brief").val();
 	post.content.full  = $("#content").val();
 	post.url = $("#url").val();
 	post.image = [];
@@ -70,7 +68,6 @@ delPost: function(e){
 fresh: function(){
 	$("#preTitle").html($("#title").val());
 	$("#preUrl").html($("#url").val());
-	$("#preBrief").html($("#brief").val());
 	var v = $("#content").val();
 	v = marked(v);
 	$("#preContent").html(v);
@@ -131,7 +128,6 @@ $(document).ready(function() {
 
 	$("#title").keyup(my_prj.fresh);
 	$("#url").keyup(my_prj.fresh);
-	$("#brief").keyup(my_prj.fresh);
 	$("#content").keyup(my_prj.fresh);
 
 	$("#upload").click(my_prj.upload);

@@ -10,8 +10,6 @@ mixin addPostCard(post)
       span.category 分类：
         a(href="/c/" + post.category)
           +cateToString(post.category)      
-      blockquote 摘要:
-        !=post.content.brief
     a.btn.btn-primary(href="/new/"+post._id) 修改
     button.btn.btn-primary.delPost(postid=post.id) 删除
 

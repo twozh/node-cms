@@ -10,7 +10,6 @@ var postSchema = new Schema({
 	author	: {type: Schema.Types.ObjectId, ref: 'User', required: true},
 	category: {type: String, enum: config.postCatogary, required: true},
 	content	: {
-		brief: String,
 		full : {type: String, required: true},
 	},
 	postTime: {type: Date, default: Date.now, required: true},

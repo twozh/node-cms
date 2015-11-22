@@ -14,8 +14,5 @@ block content
           span.category 分类：
             a(href="/c/" + post.category)
               +cateToString(post.category)      
-        .content
-          blockquote
-            | 摘要:
-            =post.content.brief          
+        .content     
           !=post.contentAfterMarked

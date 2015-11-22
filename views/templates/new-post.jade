@@ -7,20 +7,15 @@ block content
     .col-xs-6.col-sm-6.col-md6.col-lg-6
       form#formNewPost(name="formNewPost")
         .form-group
-          label 文章标题
+          label 标题
           input#title.form-control(required, name="title", value=post.title)
         .form-group
-          label url
+          label 英文标题
           input#url.form-control(required, name="url", value=post.url)
-        .form-group
-          label 文章摘要
-          - var brief = ''
-          - if (post.content) brief = post.content.brief
-          textarea#brief.form-control(rows="3", name="brief", required) #{brief} 
         .form-group
           - var content = ''
           - if (post.content) content = post.content.full
-          label 文章内容(markdown)
+          label 内容(markdown)
           textarea#content.form-control(rows="28", name="content", required) #{content}          
         .form-group
           label 图片
@@ -51,10 +46,6 @@ block content
       p#preUrl &nbsp
       hr
       .content
-        blockquote
-          span
-            strong 摘要:&nbsp
-          span#preBrief
         div#preContent
 
 block scripts

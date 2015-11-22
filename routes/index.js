@@ -223,7 +223,6 @@ var newPostCtrl = function(req, res){
 	var newPost = req.body;
 	newPost.author = req.session.userid;
 	newPost.content = {};
-	newPost.content.brief = newPost['content[brief]'];
 	newPost.content.full = newPost['content[full]'];
 	if (!newPost.image){
 		newPost.image=[];
