@@ -14,61 +14,12 @@ var postSchema = new Schema({
 	},
 	postTime: {type: Date, default: Date.now, required: true},
 	state	: {type: String, enum: ['draft', 'published']},
+	publishedPostId: {type: Schema.Types.ObjectId, ref: 'Post'},
+	draftId	: {type: Schema.Types.ObjectId, ref: 'Draft'},
 	image	: [String],
 	url		: {type: String, required: true},
 
 });
-
-postSchema.statics.create = function(obj, cb){
-	var newPost = new Post(obj);
-	newPost.save(function(err){
-		if (err) {
-			logger.error(err);
-			return cb(err);
-		}
-		cb(null);
-	});
-};
-
-postSchema.statics.update = function(id, obj, cb){
-	Post.findByIdAndUpdate(id, obj, function(err, post){
-		logger.debug(id, obj);
-		if (err){
-			return cb(err);
-		}
-		cb(null);
-	});
-};
-
-postSchema.statics.delete = function(id, cb){
-	Post.findByIdAndRemove(id, function(err){
-		if (err){
-			return cb(err);
-		}
-		cb(null);
-	});
-};
-
-postSchema.statics.postsAll = function(cb){
-	Post.find().sort('-postTime').populate('author').exec(function(err, posts){
-		if(err){
-			logger.error(err);
-			return cb(err);
-		}
-
-		cb(null, posts);
-	});
-};
-
-postSchema.statics.posts_by_author = function(author, cb){
-	Post.find({author: author}).sort('-postTime').populate('author').exec(function(err, posts){
-		if(err){
-			logger.error(err);
-			return cb(err);
-		}
-		cb(null, posts);
-	});
-};
 
 postSchema.statics.postsByUser = function(userid, cb){
 	User.findById(userid, function(err, user){
@@ -79,7 +30,7 @@ postSchema.statics.postsByUser = function(userid, cb){
 		if (user === null){
 			return cb(new Error("User dose not exist."));
 		}
-		Post.find({author: user._id}).sort('-postTime').populate('author').exec(function(err, posts){
+		Post.find({author: user._id}).sort('-postTime').populate('author draftId').exec(function(err, posts){
 			if(err){
 				logger.error(err);
 				return cb(err);
@@ -149,8 +100,57 @@ postSchema.statics.postByPostId = function(postid, cb){
 	});
 };
 
+postSchema.methods.makeUrlWithDate = function(){
+	var year = this.postTime.getFullYear();
+	var month = this.postTime.getMonth()+1;
+	var day = this.postTime.getDate();
+	if (month < 10){
+		month = '0' + month;
+	}
+	if (day < 10){
+		day = '0' + day;
+	}
+
+	return year+'/'+month+'/'+day+'/'+this.url;
+};
+
+postSchema.methods.postDateToString = function(){
+	var year = this.postTime.getFullYear();
+	var month = this.postTime.getMonth()+1;
+	var day = this.postTime.getDate();
+	var hour = this.postTime.getHours();
+	var min = this.postTime.getMinutes();
+
+	month 	= month < 10 ? ('0'+month) : month;
+	day 	= day < 10 ? ('0'+day) : day;
+	hour 	= hour < 10 ? ('0'+hour) : hour;
+	min 	= min < 10 ? ('0'+min) : min;
+
+	return year+'/'+month+'/'+day+' '+hour+':'+min;
+};
+
+postSchema.methods.categoryToString = function(){
+	var str;
+
+	switch (this.category) {
+		case 'tech':
+			str = '技术';
+			break;
+		case 'business':
+			str = '业界';
+			break;
+		default:
+			str = '其它';
+	}
+
+	return str;
+};
+
 
 var Post = mongoose.model('Post', postSchema);
+var Draft = mongoose.model('Draft', postSchema);
 
-module.exports = Post;
+exports.Post = Post;
+exports.Draft = Draft;
+
 

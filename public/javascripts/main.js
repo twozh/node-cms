@@ -21,11 +21,7 @@ back: function(e){
 	$("#preview").addClass("hidden");
 },
 
-createPost: function(e){
-	if(!document.forms.formNewPost.checkValidity()){
-		return;
-	}
-	e.preventDefault();
+getPostFormContent: function(){
 	var post = {};
 	post.title = $("#title").val();
 	//post.author, attach in server side
@@ -35,15 +31,49 @@ createPost: function(e){
 	post.url = $("#url").val();
 	post.image = [];
 	post.postid = $("#btnSubmit").attr("fileid");
+	post.draftid = $("#btnSave").attr("fileid");
+	console.log(post);
 	$("#image").find("img").each(function(index, ele){
 		post.image.push($(this).attr("src"));		
 	});
+
+	return post;
+},
+
+createPost: function(e){
+	if(!document.forms.formNewPost.checkValidity()){
+		return;
+	}
+	e.preventDefault();
+	
+	var post = my_prj.getPostFormContent();
+	
 	$.post("/new", post, function(data){
 		console.log(data);
 		if (data.status === 'err'){
 			alert(data.msg);
 		} else{
-			location.href = '/admin/'+data.name;
+			location.href = '/admin';
+		}
+	}).fail(function(){
+		alert( "Sorry, there was a problem!" );
+	});
+},
+
+saveDraft: function(e){
+	if(!document.forms.formNewPost.checkValidity()){
+		return;
+	}
+	e.preventDefault();
+
+	var draft = my_prj.getPostFormContent();
+
+	$.post('/new/draft', draft, function(data){
+		console.log(data);
+		if (data.status === 'err'){
+			alert(data.msg);
+		} else{
+			location.href = '/admin';
 		}
 	}).fail(function(){
 		alert( "Sorry, there was a problem!" );
@@ -125,6 +155,7 @@ $(document).ready(function() {
 	$("#btnPreview").click(my_prj.preview);
 	$("#btnPreBack").click(my_prj.back);
 	$("#btnSubmit").click(my_prj.createPost);
+	$('#btnSave').click(my_prj.saveDraft);
 
 	$("#title").keyup(my_prj.fresh);
 	$("#url").keyup(my_prj.fresh);

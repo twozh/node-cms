@@ -1,27 +1,40 @@
-include mixin.jade
-
-mixin addPostCard(post)
-  .card
-    h3: a(href="/" + post.dateString + "/" + post.url)= post.title
-    .time
-      +dateFormatOut(post.postTime)
-      span.author 作者：
-        a(href="/u/" + post.author.name)= post.author.name
-      span.category 分类：
-        a(href="/c/" + post.category)
-          +cateToString(post.category)      
-    a.btn.btn-primary(href="/new/"+post._id) 修改
-    button.btn.btn-primary.delPost(postid=post.id) 删除
+//- renderObj
+  posts
+    posts[i].urlWithDate
+    posts[i].title
+    posts[i].postDateString
+    posts[i].category
+    posts[i].state
+    posts[i].stateString
+    posts[i]._id
+  authorName
 
 extends ../layout/layout
 
 block content
+  h3= '欢迎您, ' + authorName
+
   a.btn.btn-lg.btn-primary(href="/new") 写新文章
   .row
     .col-xs-12.col-md-8
-      if (posts && posts.length)
-        each post in posts
-          +addPostCard(post)
-    .col-md-4
-      h3 文章管理
+      table.table
+        thead
+          tr
+            th 标题
+            th 日期
+            th 分类
+            th 状态
+        tbody
+        if (posts && posts.length)
+          each post in posts
+            tr
+              td= post.title
+              td= post.postDateString
+              td= post.category
+              td= post.stateString
+              td
+                a(href="/new/" + post._id + "?state=" + post.state) 修改
+              td 
+                button.btn.btn-primary.delPost(postid=post._id) 删除
+
 

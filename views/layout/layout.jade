@@ -38,27 +38,17 @@ html
       block content
 
     hr
-    .container
-      //footer info
-      if username
-        a.navbar-link(href="/admin/" + username)= username
-          | ,  欢迎您
-      else
-        p 
-          a.navbar-link(href="/user/signup") 注册
-        p
-          a.navbar-link(href="/user/login") 登陆
-      br
-      br
-      p.text-center
-        | ©2014 Jiansoft
+    //footer info
+    a(href="/admin") 后台
+    p.text-center
+      | ©2015 Jiansoft.net
 
-    //only have livereload.js in devlopment!!!
-    //script(src="//localhost:35729/livereload.js")
+    //-only have livereload.js in devlopment!!!
+    //-script(src="//localhost:35729/livereload.js")
 
     script(src="/jquery/dist/jquery.min.js")
     script(src="/bootstrap/dist/js/bootstrap.min.js")
     script(src="/javascripts/main.js")
 
-    //include your own script
+    //-include your own script
     block scripts

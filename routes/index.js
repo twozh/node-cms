@@ -2,7 +2,9 @@ var express = require('express');
 var router = express.Router();
 var logger = require('tracer').colorConsole();
 //var User = require('../models/User.js');
-var Post = require('../models/Post.js');
+var Post = require('../models/Post.js').Post;
+var Draft = require('../models/Post.js').Draft;
+var User = require('../user').User;
 var marked = require('marked');
 var util = require('./utility.js');
 var formidable = require('formidable');
@@ -45,8 +47,8 @@ var renderPosts = function(err, posts, req, res){
 };
 
 var postsAll = function(req, res){
-	Post.postsAll(function(err, posts){
-		return renderPosts(err, posts, req, res);
+	Post.find().sort('-postTime').populate('author').exec(function(err, posts){
+		renderPosts(err, posts, req, res);
 	});
 };
 
@@ -103,7 +105,7 @@ var postsByDate = function(req, res){
 	var date  = parseInt(req.params[2]);
 	if (month <= 0 || month > 12){
 		return renderPosts(new Error("Month is invalid."), null, req, res);
-	}
+	}	
 	if (date <= 0 || date > 31){
 		return renderPosts(new Error("Date is invalid."), null, req, res);
 	}
@@ -192,27 +194,62 @@ var postSingle = function(req, res){
 var newPostGet = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/user/login");
-	}
+	}	
 
 	var render = {
-		username: req.session.username,
-		fileid: req.params.postid,
-		post: {},
+		draftid: null,
+		postid: null,
+		post: {}
 	};
 
 	if (req.params.postid){
-		Post.postByPostId(req.params.postid, function(err, post){
-			if (err){
-				logger.error(err);
-			} else{
+		var state = req.query.state;
+
+		if (state === 'draft'){
+			Draft.findById(req.params.postid, function(err, draft){
+				if (err){
+					logger.error(err);
+					return res.send(err.message);
+				}
+
+				render.post = draft;
+				render.draftid = draft._id;
+				render.postid = draft.publishedPostId;
+				return res.render('templates/new-post.jade', render);
+			});
+		} else if (state === 'published'){
+			Post.findById(req.params.postid, function(err, post){
+				if (err){
+					logger.error(err);
+					return res.send(err.message);
+				}
+
 				render.post = post;
-			}
-			
-			return res.render('templates/new-post.jade', render);
-		});
+				render.draftid = post.draftId;
+				render.postid = post._id;
+				return res.render('templates/new-post.jade', render);
+			});
+		} else{
+			logger.error('Wrong state: '+state);
+			return res.send('Error');
+		}
+
 	} else{
 		return res.render('templates/new-post.jade', render);
 	}	
+};
+
+var preparePost = function(req){
+	var post = req.body;
+	post.author = req.session.userid;
+	post.url = post.url.trim().replace(/\s/g, '_');
+	post.content = {};
+	post.content.full = post['content[full]'];
+	if (!post.image){
+		post.image=[];
+	}
+
+	return post;
 };
 
 var newPostCtrl = function(req, res){
@@ -220,27 +257,87 @@ var newPostCtrl = function(req, res){
 		return res.redirect("/user/login");
 	}	
 
-	var newPost = req.body;
-	newPost.author = req.session.userid;
-	newPost.content = {};
-	newPost.content.full = newPost['content[full]'];
-	if (!newPost.image){
-		newPost.image=[];
-	}
+	var newPost = preparePost(req);
+	newPost.state = 'published';
+	newPost.draftId = null;
+	
 	var cb = function(err){
 		if (err){
 			logger.error(err);
 			return res.send({status: 'err', msg: err.message});
 		}
-		res.send({status: 'succ', msg: "Create/Update new article success.", name:req.session.username});
-		//res.redirect('/admin/'+req.session.username);
+
+		//if exist draft, delete the draft
+		if (newPost.draftid){
+			return Draft.findByIdAndRemove(newPost.draftid).exec(function(err){
+				if (err){
+					logger.error(err);
+					return res.send({status: 'err', msg: err.message});
+				}
+				
+				res.send({status: 'succ', msg: "Create/Update new article success.", name:req.session.username});				
+			});
+		}
+			
+		res.send({status: 'succ', msg: "Create/Update new article success.", name:req.session.username});		
 	};
 
-	if (newPost.postid){
-		Post.update(newPost.postid, newPost, cb);
-	} else{
-		Post.create(newPost, cb);
+	//no postid, create a new post
+	if (!newPost.postid){
+		var newPostModel = new Post(newPost);
+		return newPostModel.save(function(err){
+			cb(err);
+		});
 	}
+
+	//otherwise update the post
+	Post.findByIdAndUpdate(newPost.postid, newPost, cb);
+};
+
+var newDraftCtrl = function(req, res){
+	if (req.session.auth !== true){
+		return res.redirect("/user/login");
+	}
+
+	var newDraft = preparePost(req);
+	newDraft.state = 'draft';
+	newDraft.publishedPostId = newDraft.postid;
+
+	var cb = function(err, draft){
+		if (err){
+			logger.error(err);
+			return res.send({status: 'err', msg: err.message});
+		}
+
+		if (newDraft.postid && !newDraft.draftid){
+			return Post.findByIdAndUpdate(newDraft.postid, {draftId: draft._id}, function(err){
+				if (err){
+					logger.error(err);
+					return res.send({status: 'err', msg: err.message});
+				}
+
+				res.send({status: 'succ', msg: "Create/Update new draft success.", name:req.session.username});
+			});
+		}
+
+		res.send({status: 'succ', msg: "Create/Update new draft success.", name:req.session.username});
+	};
+
+	//no draftid, create new draft
+	if (!newDraft.draftid){
+		var newDraftModel = new Draft(newDraft);
+		return newDraftModel.save(function(err, m){
+			if (err){
+				logger.error(err);
+				return res.send({status: 'err', msg: err.message});
+			}
+
+			cb(null, m);
+		});
+	}
+
+	//have draftid, update draft
+	Draft.findByIdAndUpdate(newDraft.draftid, newDraft, cb);
 };
 
 var delPost = function(req, res){
@@ -248,13 +345,20 @@ var delPost = function(req, res){
 		return res.redirect("/user/login");
 	}
 
-	Post.delete(req.body.postid, function(err){
+	Post.findByIdAndRemove(req.body.postid, function(err){
 		if (err){
 			logger.error(err);
 			return res.send({status: 'err', msg: err.message});
 		}
 
-		return res.send({status: 'succ', msg: "del post succ."});
+		Draft.findByIdAndRemove(req.body.postid, function(err){
+			if (err){
+				logger.error(err);
+				return res.send({status: 'err', msg: err.message});
+			}
+
+			return res.send({status: 'succ', msg: "del post succ."});
+		});		
 	});
 };
 
@@ -304,22 +408,45 @@ var deleteImg = function(req, res){
 	});	
 };
 
-var adminView = function(req, res){
+var adminViewGet = function(req, res){
 	if (req.session.auth !== true){
 		return res.redirect("/user/login");
-	}	
-	var render = {
-		username: req.session.username
-	};
+	}
+	var renderObj = {};
+	renderObj.authorName = req.session.username;
 
-	Post.postsByUser(req.session.userid, function(err, posts){
-		for (var i=0; i<posts.length; i++){
-			posts[i].dateString = util.dateToString(posts[i].postTime);
+	var draftsQuery = Draft.find({author: req.session.userid}).sort('-postTime');
+	var postsQuery = Post.find({author: req.session.userid}).sort('-postTime');
+	
+	draftsQuery.exec(function(err, drafts){
+		var renderPosts = [];
+
+		//all drafts
+		for (var i=0; i<drafts.length; i++){
+			drafts[i].urlWithDate = drafts[i].makeUrlWithDate();
+			drafts[i].postDateString = drafts[i].postDateToString();
+			drafts[i].category = drafts[i].categoryToString();
+			drafts[i].stateString = '草稿';
+
+			renderPosts.push(drafts[i]);
 		}
 
-		render.posts = posts;
-		return res.render('templates/admin.jade', render);
-	});	
+		postsQuery.exec(function(err, posts){
+			for (var i=0; i<posts.length; i++){
+				//posts with no draft
+				if (!posts[i].draftId){
+					posts[i].urlWithDate = posts[i].makeUrlWithDate();
+					posts[i].postDateString = posts[i].postDateToString();
+					posts[i].category = posts[i].categoryToString();
+					posts[i].stateString = '已发布';
+					renderPosts.push(posts[i]);	
+				}				
+			}
+
+			renderObj.posts = renderPosts;
+			return res.render('templates/admin.jade', renderObj);
+		});
+	});
 };
 
 /* GET home page. */
@@ -333,16 +460,19 @@ router.get(/^\/(\d{4})\/(\d{2})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/?$/, postsByDaterangeCtrl);
 router.get(/^\/(\d{4})\/(\d{2})\/(\d{2})\/([\w-]+)$/, postSingle);
 
-/* user panel */
-router.get('/admin/:username', adminView);
+
+/* post admin */
+router.get('/admin', adminViewGet);
 
 /* new post */
 router.get('/new', newPostGet);
 router.get('/new/:postid', newPostGet);
-router.post('/new/delPost', delPost);
 
-router.post('/new', newPostCtrl);
+router.post('/new/delPost', delPost);
 router.post('/new/upload', upload);
 router.post('/new/delete', deleteImg);
+router.post('/new/draft', newDraftCtrl);
+router.post('/new', newPostCtrl);
+
 
 module.exports = router;
