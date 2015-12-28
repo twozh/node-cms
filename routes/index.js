@@ -439,6 +439,7 @@ var adminViewGet = function(req, res){
 					posts[i].postDateString = posts[i].postDateToString();
 					posts[i].category = posts[i].categoryToString();
 					posts[i].stateString = '已发布';
+					posts[i].state       = 'published';
 					renderPosts.push(posts[i]);	
 				}				
 			}
