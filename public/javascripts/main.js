@@ -82,8 +82,11 @@ saveDraft: function(e){
 
 delPost: function(e){
 	console.log($(e.target).attr("postid"));
-	$.post("/new/delPost", {postid: $(e.target).attr("postid")}, function(data){
-		console.log(data);
+	var postData = {
+		postid: $(e.target).attr("postid"),
+		state: $(e.target).attr("state")
+	};
+	$.post("/new/delPost", postData, function(data){
 		if (data.status === 'err'){
 			alert(data.msg);
 		} else{

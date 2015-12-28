@@ -35,6 +35,6 @@ block content
               td
                 a(href="/new/" + post._id + "?state=" + post.state) 修改
               td 
-                button.btn.btn-primary.delPost(postid=post._id) 删除
+                button.btn.btn-primary.delPost(postid=post._id, state=post.state) 删除
 
 

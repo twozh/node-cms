@@ -345,21 +345,39 @@ var delPost = function(req, res){
 		return res.redirect("/user/login");
 	}
 
-	Post.findByIdAndRemove(req.body.postid, function(err){
-		if (err){
-			logger.error(err);
-			return res.send({status: 'err', msg: err.message});
-		}
-
-		Draft.findByIdAndRemove(req.body.postid, function(err){
+	if (req.body.state === 'published'){
+		return Post.findByIdAndRemove(req.body.postid, function(err){
 			if (err){
 				logger.error(err);
 				return res.send({status: 'err', msg: err.message});
 			}
 
 			return res.send({status: 'succ', msg: "del post succ."});
-		});		
-	});
+		});
+	} else if (req.body.state === 'draft'){
+		Draft.findByIdAndRemove(req.body.postid, function(err, draft){
+			if (err){
+				logger.error(err);
+				return res.send({status: 'err', msg: err.message});
+			}
+
+			if (draft && draft.publishedPostId){
+				Post.findByIdAndUpdate(draft.publishedPostId, {draftId: null}, function(err){
+					if (err){
+						logger.error(err);
+						return res.send({status: 'err', msg: err.message});
+					}
+
+					return res.send({status: 'succ', msg: "del post succ."});
+				});
+			}
+
+			return res.send({status: 'succ', msg: "del post succ."});			
+		});
+	} else{
+		logger.error('wrong state: ' + req.body.state);
+		return res.send({status: 'err', msg: 'wrong state'});
+	}
 };
 
 var upload = function(req, res){
