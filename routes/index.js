@@ -370,9 +370,9 @@ var delPost = function(req, res){
 
 					return res.send({status: 'succ', msg: "del post succ."});
 				});
+			} else {
+				res.send({status: 'succ', msg: "del post succ."});
 			}
-
-			return res.send({status: 'succ', msg: "del post succ."});			
 		});
 	} else{
 		logger.error('wrong state: ' + req.body.state);
