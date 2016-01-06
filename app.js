@@ -25,8 +25,8 @@ store.on('error', function(error) {
 
 // view engine setup
 var views = [
-    path.join(__dirname, 'user/views'),
-    path.join(__dirname, 'views')
+    path.join(__dirname, 'views'),
+    path.join(__dirname, 'user/views')
 ];
 app.set('views', views);
 app.set('view engine', 'jade');

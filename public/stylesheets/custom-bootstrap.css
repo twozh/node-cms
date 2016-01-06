@@ -5867,6 +5867,33 @@ button.close {
     bottom: 20px;
   }
 }
+.navbar {
+  border-width: 1px;
+  border-style: none none solid none;
+}
+.navbar-brand {
+  font-weight: bolder;
+}
+@media (min-width: 480px) {
+  .navbar-brand {
+    font-size: 18px;
+  }
+}
+@media (min-width: 768px) {
+  .navbar-brand {
+    font-size: 24px;
+  }
+}
+@media (min-width: 992px) {
+  .navbar-brand {
+    font-size: 28px;
+  }
+}
+@media (min-width: 1200px) {
+  .navbar-brand {
+    font-size: 32px;
+  }
+}
 .clearfix:before,
 .clearfix:after,
 .dl-horizontal dd:before,
@@ -6161,33 +6188,6 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important;
-  }
-}
-.navbar {
-  border-width: 1px;
-  border-style: none none solid none;
-}
-.navbar-brand {
-  font-weight: bolder;
-}
-@media (min-width: 480px) {
-  .navbar-brand {
-    font-size: 18px;
-  }
-}
-@media (min-width: 768px) {
-  .navbar-brand {
-    font-size: 24px;
-  }
-}
-@media (min-width: 992px) {
-  .navbar-brand {
-    font-size: 28px;
-  }
-}
-@media (min-width: 1200px) {
-  .navbar-brand {
-    font-size: 32px;
   }
 }
 /*# sourceMappingURL=custom-bootstrap.css.map */

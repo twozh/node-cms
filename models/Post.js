@@ -21,45 +21,6 @@ var postSchema = new Schema({
 
 });
 
-postSchema.statics.postsByUser = function(userid, cb){
-	User.findById(userid, function(err, user){
-		if (err){
-			logger.error(err);
-			return cb(err);
-		}
-		if (user === null){
-			return cb(new Error("User dose not exist."));
-		}
-		Post.find({author: user._id}).sort('-postTime').populate('author draftId').exec(function(err, posts){
-			if(err){
-				logger.error(err);
-				return cb(err);
-			}
-
-			cb(null, posts);
-		});
-	});
-};
-
-postSchema.statics.postsByCategory = function(category, cb){
-	/* validate the category */
-	for (var i = 0; i < config.postCatogary.length; i++){
-		if (category === config.postCatogary[i]) break;
-	}
-	if (i === config.postCatogary.length){
-		return cb(new Error("Category is invalid!"));
-	}
-
-	Post.find({category: category}).sort('-postTime').populate('author').exec(function(err, posts){
-		if(err){
-			logger.error(err);
-			return cb(err);
-		}
-		logger.debug(posts.length);
-		cb(null, posts);
-	});
-};
-
 postSchema.statics.postsByDate = function(startDate, stopDate, cb){
 	Post.find()
 		.where('postTime').gte(startDate).lte(stopDate)
@@ -70,7 +31,6 @@ postSchema.statics.postsByDate = function(startDate, stopDate, cb){
 				logger.error(err);
 				return cb(err);
 			}
-			logger.debug(posts.length);
 			cb(null, posts);
 		});
 };
@@ -88,16 +48,6 @@ postSchema.statics.postByDateAndUrl = function(startDate, stopDate, url, cb){
 			logger.debug(posts.length);
 			cb(null, posts);
 		});
-};
-
-postSchema.statics.postByPostId = function(postid, cb){
-	Post.findById(postid, function(err, post){
-		if(err){
-			logger.error(err);
-			return cb(err);
-		}
-		cb(null, post);
-	});
 };
 
 postSchema.methods.makeUrlWithDate = function(){

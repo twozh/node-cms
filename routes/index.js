@@ -10,6 +10,7 @@ var util = require('./utility.js');
 var formidable = require('formidable');
 var utilSys = require('util');
 var fs = require('fs');
+var config = require('../config.js');
 
 marked.setOptions({
 	renderer: new marked.Renderer(),
@@ -25,25 +26,25 @@ marked.setOptions({
 /* view post */
 
 /* render posts */
-var renderPosts = function(err, posts, req, res){
-	var render = {
-		username: req.session.username,
-		posts: posts
-	};
-
+var renderPosts = function(err, posts, req, res){	
+	var renderObj = {};
 	if (err){
 		logger.error(err);
-		render.title = "404 page not found";
-		render.message = err.message;
-		return res.render('../views/error.jade', render);
+		renderObj.title = "404 page not found";
+		renderObj.message = err.message;
+		renderObj.error = err;
+		return res.render('../views/error.jade', renderObj);
 	}
 
 	for (var i=0; i<posts.length; i++){
-		posts[i].dateString = util.dateToString(posts[i].postTime);
-		posts[i].contentAfterMarked = marked(posts[i].content.full);
+		posts[i].urlWithDate = posts[i].makeUrlWithDate();
+		posts[i].postDateString = posts[i].postDateToString();		
+		posts[i].categoryString = posts[i].categoryToString();
 	}
 
-	return res.render('templates/posts.jade', render);
+	renderObj.posts = posts;
+
+	return res.render('templates/posts.jade', renderObj);
 };
 
 var postsAll = function(req, res){
@@ -53,13 +54,42 @@ var postsAll = function(req, res){
 };
 
 var postsByUserCtrl = function(req, res){
-	Post.postsByUser(req.params.userid, function(err, posts){
-		return renderPosts(err, posts, req, res);
+	User.findById(req.params.userid, function(err, user){
+		if (err){
+			logger.error(err);
+			return renderPosts(err, null, req, res);
+		}
+		if (user === null){
+			return renderPosts(new Error("User dose not exist."), null, req, res);
+		}
+		Post.find({author: user._id}).sort('-postTime').populate('author').exec(function(err, posts){
+			if(err){
+				logger.error(err);
+				return renderPosts(err);
+			}
+
+			renderPosts(null, posts, req, res);
+		});
 	});
 };
 
 var postsByCategoryCtrl = function(req, res){
-	Post.postsByCategory(req.params.category, function(err, posts){
+	var category = req.params.category;
+
+	/* validate the category */
+	for (var i = 0; i < config.postCatogary.length; i++){
+		if (category === config.postCatogary[i]) break;
+	}
+	if (i === config.postCatogary.length){
+		return renderPosts(new Error("Category is invalid!"), null, req, res);
+	}
+
+	Post.find({category: category}).sort('-postTime').populate('author').exec(function(err, posts){
+		if(err){
+			logger.error(err);
+			return renderPosts(err, null, req, res);
+		}
+
 		return renderPosts(err, posts, req, res);
 	});
 };
@@ -93,7 +123,6 @@ var postsByMonth = function(req, res){
 	startDate.setHours(0, 0, 0, 0);
 	endDate.setFullYear(year, month, 1);
 	endDate.setHours(0, 0, 0, 0);
-	logger.debug(startDate, '  ', endDate);
 	Post.postsByDate(startDate, endDate, function(err, posts){
 		return renderPosts(err, posts, req, res);
 	});
@@ -182,12 +211,13 @@ var postSingle = function(req, res){
 			return res.render('../views/error.jade', render);
 		}
 
-		render.post = posts[0];
-		render.post.contentAfterMarked = marked(posts[0].content.full);
+		var post = posts[0];
+		post.contentAfterMarked = marked(posts[0].content.full);
+		post.categoryString = post.categoryToString();
+		post.postDateString = post.postDateToString();
+		render.post = post;
 		return res.render('templates/post.jade', render);
 	});
-
-
 };
 
 /* new post */
